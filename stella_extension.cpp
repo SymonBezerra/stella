@@ -523,7 +523,6 @@ static PyObject* AdjList_addEdge(AdjListObject* self, PyObject* args) {
         }
     }
 
-
     PyErr_Clear();
 
     if (PyArg_ParseTuple(args, "O", &arg)) {
@@ -544,30 +543,62 @@ static PyObject* AdjList_addEdge(AdjListObject* self, PyObject* args) {
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(StellaError, ex.what());
+            return NULL;
         }
     }
 
-    PyErr_SetString(PyExc_TypeError, "Invalid arguments for addEdge. Expected Edge object or (str, str, str, [int]).");
+    PyErr_SetString(PyExc_TypeError, "Invalid arguments for add_edge. Expected Edge object or (str, str, str, [int]).");
     return NULL;
 }
 
 static PyObject* DirectedAdjList_addEdge(DirectedAdjListObject* self, PyObject* args) {
     PyObject* arg;
-    if (PyArg_ParseTuple(args, "o", &arg)) {
-        if (!PyObject_IsInstance(arg, (PyObject *) &DirectedEdgeType))
+    const char* label;
+    const char* n1_label;
+    const char* n2_label;
+    int weight = 1;
+
+
+    if (PyArg_ParseTuple(args, "sss|i", &label, &n1_label, &n2_label, &weight)) {
+        try {
+            self->adjlist->addEdge(label, n1_label, n2_label, weight);
+            Py_RETURN_NONE;
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
+            return NULL;
+        }
+    }
+
+    PyErr_Clear();
+
+    if (PyArg_ParseTuple(args, "O", &arg)) {
+        if (!PyObject_IsInstance(arg, (PyObject* )&DirectedEdgeType)) {
             PyErr_SetString(PyExc_TypeError, "Object must be of DirectedEdge type");
             return NULL;
+        }
+
+        DirectedEdgeObject* edgeObject = (DirectedEdgeObject*) arg;
+        stella::DirectedEdge* edge = edgeObject->edge;
+        edgeObject->isOwner = false;
+        try {
+            self->adjlist->addEdge(edge);
+            Py_RETURN_NONE;
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
+            return NULL;
+        }
     }
-    PyErr_Clear();
-    return AdjList_addEdge((AdjListObject *) self, args);
+
+    PyErr_SetString(PyExc_TypeError, "Invalid arguments for add_edge. Expected Edge object or (str, str, str, [int]).");
+    return NULL;
 }
 
 static PyObject* AdjList_getEdge(AdjListObject* self, PyObject* args) {
     const char* label;
     if (!PyArg_ParseTuple(args, "s", &label)) {
+        PyErr_SetString(PyExc_ValueError, "No argument for get_edge, str expected");
         return NULL;
     }
-
 
     stella::Edge* edge = self->adjlist->getEdge(label);
     if (edge) {
@@ -585,6 +616,7 @@ static PyObject* AdjList_getEdge(AdjListObject* self, PyObject* args) {
 static PyObject* AdjList_getNode(AdjListObject* self, PyObject* args) {
     const char* label;
     if (!PyArg_ParseTuple(args, "s", &label)) {
+        PyErr_SetString(PyExc_ValueError, "No argument for get_node, str expected");
         return NULL;
     }
 
