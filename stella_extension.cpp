@@ -341,6 +341,8 @@ static PyTypeObject DirectedEdgeType = {
     0,                         /* tp_new */
 };
 
+static PyObject *StellaError;
+
 typedef struct {
     PyObject_HEAD
     stella::Graph<stella::Node, stella::BaseEdge> *graph;
@@ -471,8 +473,13 @@ static void AdjList_dealloc(AdjListObject* self) {
 static PyObject* AdjList_addNode(AdjListObject* self, PyObject* args) {
     PyObject* arg;
     if (PyArg_ParseTuple(args, "s", &arg)) {
-        self->adjlist->addNode(new stella::Node((const char* )arg));
-        Py_RETURN_NONE;
+        try {
+            self->adjlist->addNode(new stella::Node((const char* )arg));
+            Py_RETURN_NONE;
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
+            return NULL;
+        }
     }
 
     PyErr_Clear();
@@ -485,8 +492,13 @@ static PyObject* AdjList_addNode(AdjListObject* self, PyObject* args) {
         NodeObject* nodeObj = (NodeObject*) arg;
         stella::Node* node = nodeObj->node;
         nodeObj->isOwner = false;
-        self->adjlist->addNode(node);
-        Py_RETURN_NONE;
+        try {
+            self->adjlist->addNode(node);
+            Py_RETURN_NONE;
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
+            return NULL;
+        }
     } else {
         PyErr_SetString(PyExc_TypeError, "Invalid arguments for addEdge, expected Node object or str");
         return NULL;
@@ -502,13 +514,11 @@ static PyObject* AdjList_addEdge(AdjListObject* self, PyObject* args) {
 
 
     if (PyArg_ParseTuple(args, "sss|i", &label, &n1_label, &n2_label, &weight)) {
-        stella::Node* node1 = self->adjlist->getNode(n1_label);
-        stella::Node* node2 = self->adjlist->getNode(n2_label);
-        if (node1 && node2) {
-            self->adjlist->addEdge(new stella::Edge(label, node1, node2, weight));
+        try {
+            self->adjlist->addEdge(label, n1_label, n2_label, weight);
             Py_RETURN_NONE;
-        } else {
-            PyErr_SetString(PyExc_ValueError, "Nodes not found");
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
             return NULL;
         }
     }
@@ -529,8 +539,12 @@ static PyObject* AdjList_addEdge(AdjListObject* self, PyObject* args) {
         EdgeObject* edgeObject = (EdgeObject*) arg;
         stella::Edge* edge = edgeObject->edge;
         edgeObject->isOwner = false;
-        self->adjlist->addEdge(edge);
-        Py_RETURN_NONE;
+        try {
+            self->adjlist->addEdge(edge);
+            Py_RETURN_NONE;
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
+        }
     }
 
     PyErr_SetString(PyExc_TypeError, "Invalid arguments for addEdge. Expected Edge object or (str, str, str, [int]).");
@@ -563,10 +577,9 @@ static PyObject* AdjList_getEdge(AdjListObject* self, PyObject* args) {
         pyEdge->edge = edge;
         pyEdge->isOwner = false;
         return (PyObject *) pyEdge;
-    } else {
-        PyErr_SetString(PyExc_ValueError, "Edge not found");
-        return NULL;
     }
+
+    Py_RETURN_NONE;
 }
 
 static PyObject* AdjList_getNode(AdjListObject* self, PyObject* args) {
@@ -574,7 +587,6 @@ static PyObject* AdjList_getNode(AdjListObject* self, PyObject* args) {
     if (!PyArg_ParseTuple(args, "s", &label)) {
         return NULL;
     }
-
 
     stella:: Node* node = self->adjlist->getNode(label);
     if (node) {
@@ -587,10 +599,9 @@ static PyObject* AdjList_getNode(AdjListObject* self, PyObject* args) {
         node_obj->isOwner = false;
 
         return (PyObject*)node_obj;
-    } else {
-        PyErr_SetString(PyExc_ValueError, "Node not found");
-        return NULL;
     }
+
+    Py_RETURN_NONE;
 }
 
 static PyObject* AdjList_getAllNodes(AdjListObject* self, PyObject* args) {
@@ -828,6 +839,14 @@ PyInit_stella(void) {
 
     Py_INCREF(&GraphType);
     PyModule_AddObject(m, "Graph", (PyObject *)&GraphType);
+
+    StellaError = PyErr_NewException("stella.StellaError", NULL, NULL);
+    if (StellaError == NULL) {
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    PyModule_AddObject(m, "StellaError", StellaError);
 
     return m;
 }
