@@ -128,7 +128,7 @@ namespace stella {
     template<typename N, typename E>
     class AdjList: public Graph<N, E> {
         static_assert(std::is_base_of<Edge, E>::value, "E must be of type stella::Edge for non-directed graphs");
-        private:
+        protected:
             vector<N*> nodes;
             map<string, E*> edges;
         public:
@@ -200,6 +200,9 @@ namespace stella {
         static_assert(std::is_base_of<DirectedEdge, E>::value, "E must be of type stella::DirectedEdge for directed graphs");
         public:
             DirectedAdjList(): AdjList<N, E>() {}
+            std::map<string, E*>& getAllEdges() {
+                return this->edges;
+            }
     };
 
     template<typename N, typename E>
@@ -344,7 +347,7 @@ namespace stella {
             if (node1 < 0 || node2 < 0)
                 throw std::invalid_argument("Node labels not found: " + n1 + " " + n2);
             E* edge = new E(label, this->nodes[node1], this->nodes[node2], 1);
-            this->edges[n1][n2].insert({edge->label, edge});
+            this->edges[node1][node2].insert({edge->label, edge});
         }
 
         void addEdge(string label, string n1, string n2, int weight) {
@@ -353,7 +356,10 @@ namespace stella {
             if (node1 < 0 || node2 < 0)
                 throw std::invalid_argument("Node labels not found: " + n1 + " " + n2);
             E* edge = new E(label, this->nodes[node1], this->nodes[node2], weight);
-            this->edges[n1][n2].insert({edge->label, edge});
+            this->edges[node1][node2].insert({edge->label, edge});
+        }
+        std::vector<std::vector<std::map<string, E*>>>& getAllEdges() {
+                return this->edges;
         }
         ~DirectedAdjMatrix() {
             int size = this->nodes.size();
