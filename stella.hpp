@@ -126,7 +126,7 @@ namespace stella {
     };
 
     template<typename N, typename E>
-    class AdjList: Graph<N, E> {
+    class AdjList: public Graph<N, E> {
         static_assert(std::is_base_of<Edge, E>::value, "E must be of type stella::Edge for non-directed graphs");
         private:
             vector<N*> nodes;
@@ -134,24 +134,38 @@ namespace stella {
         public:
             AdjList() {}
             void addNode(N* node) override {
+                if (getNode(node->getLabel()))
+                    throw std::invalid_argument("Node already exists: " + node->getLabel());
                 nodes.push_back(node);
             }
             void addNode(string label) override {
+                if (getNode(label))
+                    throw std::invalid_argument("Node already exists: " + label);
                 N* node = new N(label);
                 nodes.push_back(node);
             }
             void addEdge(E* edge) override {
+                if (getEdge(edge->getLabel()))
+                    throw std::invalid_argument("Edge already exists: " + edge->getLabel());
                 edges.insert({edge->getLabel(), edge});
             }
             void addEdge(string label, string n1, string n2) override {
+                if (getEdge(label))
+                    throw std::invalid_argument("Edge already exists: " + label);
                 N* node1 = getNode(n1);
                 N* node2 = getNode(n2);
+                if (!node1 || !node2)
+                    throw std::invalid_argument("Node labels not found: " + n1 + " " + n2);
                 E* edge = new E(label, node1, node2);
-                edges.insert({edge->getLabel(), edge});
+                edges.insert({label, edge});
             }
             void addEdge(string label, string n1, string n2, int weight) override {
+                if (getEdge(label))
+                    throw std::invalid_argument("Edge already exists: " + label);
                 N* node1 = getNode(n1);
                 N* node2 = getNode(n2);
+                if (!node1 || !node2)
+                    throw std::invalid_argument("Node labels not found: " + n1 + " " + n2);
                 E* edge = new E(label, node1, node2, weight);
                 edges.insert({edge->getLabel(), edge});
             }
