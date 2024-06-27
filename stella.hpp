@@ -238,8 +238,9 @@ namespace stella {
         if (n1 < 0 || n2 < 0)
             throw std::invalid_argument("Node labels not found: "
             + edge->getN1()->getLabel() + " " + edge->getN2()->getLabel());
-            if (n1 > n2) edges[n1][n2].insert({edge->label, edge});
-            else edges[n2][n1].insert({edge->label, edge});
+            if (n1 > n2) edges[n1][n2].insert({edge->getLabel(), edge});
+            else if (n1 == n2) edges[n1][0].insert({edge->getLabel(), edge});
+            else edges[n2][n1].insert({edge->getLabel(), edge});
         }
 
         void addEdge(string label, string n1, string n2) {
@@ -248,8 +249,9 @@ namespace stella {
             if (node1 < 0 || node2 < 0)
                 throw std::invalid_argument("Node labels not found: " + n1 + " " + n2);
             E* edge = new E(label, nodes[node1], nodes[node2], 1);
-            if (node1 > node2) edges[node1][node2].insert({edge->label, edge});
-            else edges[node2][node1].insert({edge->label, edge});
+            if (node1 > node2) edges[node1][node2].insert({edge->getLabel(), edge});
+            else if (node2 == node1) edges[node1][0].insert({edge->getLabel(), edge});
+            else edges[node2][node1].insert({edge->getLabel(), edge});
         }
 
         void addEdge(string label, string n1, string n2, int weight) {
@@ -258,8 +260,9 @@ namespace stella {
             if (node1 < 0 || node2 < 0)
                 throw std::invalid_argument("Node labels not found: " + n1 + " " + n2);
             E* edge = new E(label, nodes[node1], nodes[node2], weight);
-            if (node2 > node1) edges[node1][node2].insert({edge->label, edge});
-            else edges[node2][node1].insert({edge->label, edge});
+            if (node2 > node1) edges[node1][node2].insert({edge->getLabel(), edge});
+            else if (node2 == node1) edges[node1][0].insert({edge->getLabel(), edge});
+            else edges[node2][node1].insert({edge->getLabel(), edge});
         }
             N* getNode(std::string label) {
                 for (N* node : nodes) {
@@ -339,7 +342,7 @@ namespace stella {
             if (n1 < 0 || n2 < 0)
                 throw std::invalid_argument("Node labels not found: "
                     + edge->getN1()->getLabel() + " " + edge->getN2()->getLabel());
-            this->edges[n1][n2].insert({edge->label, edge});
+            this->edges[n1][n2].insert({edge->getLabel(), edge});
         }
         void addEdge(string label, string n1, string n2) {
             int node1 = this->getNodeIndex(n1);
@@ -347,7 +350,7 @@ namespace stella {
             if (node1 < 0 || node2 < 0)
                 throw std::invalid_argument("Node labels not found: " + n1 + " " + n2);
             E* edge = new E(label, this->nodes[node1], this->nodes[node2], 1);
-            this->edges[node1][node2].insert({edge->label, edge});
+            this->edges[node1][node2].insert({edge->getLabel(), edge});
         }
 
         void addEdge(string label, string n1, string n2, int weight) {
@@ -356,10 +359,7 @@ namespace stella {
             if (node1 < 0 || node2 < 0)
                 throw std::invalid_argument("Node labels not found: " + n1 + " " + n2);
             E* edge = new E(label, this->nodes[node1], this->nodes[node2], weight);
-            this->edges[node1][node2].insert({edge->label, edge});
-        }
-        std::vector<std::vector<std::map<string, E*>>>& getAllEdges() {
-                return this->edges;
+            this->edges[node1][node2].insert({edge->getLabel(), edge});
         }
         ~DirectedAdjMatrix() {
             int size = this->nodes.size();

@@ -37,6 +37,8 @@
 #include <sstream>
 #include "stella.hpp"
 
+/* ******************** NODE IMPL STARTED  **************************/
+
 typedef struct {
     PyObject_HEAD
     stella::Node *node;
@@ -119,25 +121,14 @@ static PyTypeObject NodeType = {
     0,                         /* tp_alloc */
     Node_new,                  /* tp_new */
 };
+/* ******************** NODE IMPL FINISHED  **************************/
 
-// Define a struct to represent the Python object for BaseEdge
+/* ******************** BASEEDGE IMPL STARTED  **************************/
 typedef struct {
     PyObject_HEAD
     stella::BaseEdge *edge;
     bool isOwner = false;
 } BaseEdgeObject;
-
-typedef struct {
-    PyObject_HEAD
-    stella::Edge *edge;
-    bool isOwner = false;
-} EdgeObject;
-
-typedef struct {
-    PyObject_HEAD
-    stella::DirectedEdge *edge;
-    bool isOwner = false;
-} DirectedEdgeObject;
 
 static void BaseEdge_dealloc(BaseEdgeObject *self) {
     if (self->isOwner) delete self->edge;
@@ -197,18 +188,6 @@ static PyObject *BaseEdge_weight(BaseEdgeObject* self) {
     return PyLong_FromLong(weight);
 }
 
-static PyObject *Edge_str(EdgeObject *self) {
-    std::ostringstream oss;
-    oss << self->edge;
-    return PyUnicode_FromString(oss.str().c_str());
-}
-
-static PyObject *DirectedEdge_str(DirectedEdgeObject *self) {
-    std::ostringstream oss;
-    oss << self->edge;
-    return PyUnicode_FromString(oss.str().c_str());
-}
-
 static PyGetSetDef BaseEdge_GetSet[] = {
     {"label", (getter)BaseEdge_label, NULL, "Edge label"},
     {"n1", (getter)BaseEdge_n1, NULL, "Node first node"},
@@ -258,6 +237,16 @@ static PyTypeObject BaseEdgeType = {
     BaseEdge_new,              /* tp_new */
 };
 
+/* ******************** BASEEDGE IMPL FINISHED  **************************/
+
+/* ******************** EDGE IMPL STARTED  **************************/
+
+typedef struct {
+    PyObject_HEAD
+    stella::Edge *edge;
+    bool isOwner = false;
+} EdgeObject;
+
 static PyTypeObject EdgeType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "stella.Edge",             /* tp_name */
@@ -274,7 +263,7 @@ static PyTypeObject EdgeType = {
     0,                         /* tp_as_mapping */
     0,                         /* tp_hash  */
     0,                         /* tp_call */
-    (reprfunc)Edge_str,        /* tp_str */
+    0,                         /* tp_str */
     0,                         /* tp_getattro */
     0,                         /* tp_setattro */
     0,                         /* tp_as_buffer */
@@ -298,6 +287,22 @@ static PyTypeObject EdgeType = {
     0,                         /* tp_alloc */
     0,                         /* tp_new */
 };
+
+/* ******************** EDGE IMPL FINISHED  **************************/
+
+/* ******************** DIRECTEDEDGE IMPL STARTED  **************************/
+
+typedef struct {
+    PyObject_HEAD
+    stella::DirectedEdge *edge;
+    bool isOwner = false;
+} DirectedEdgeObject;
+
+static PyObject *DirectedEdge_str(DirectedEdgeObject *self) {
+    std::ostringstream oss;
+    oss << self->edge;
+    return PyUnicode_FromString(oss.str().c_str());
+}
 
 // DirectedEdge type definition
 static PyTypeObject DirectedEdgeType = {
@@ -339,34 +344,23 @@ static PyTypeObject DirectedEdgeType = {
     0,                         /* tp_init */
     0,                         /* tp_alloc */
     0,                         /* tp_new */
+
 };
 
+/* ******************** DIRECTEDEDGE IMPL FINISHED  **************************/
+
+/* ******************** STELLAERROR IMPL STARTED  **************************/
+
 static PyObject *StellaError;
+
+/* ******************** STELLAERROR IMPL FINISHED  **************************/
+
+/* ******************** GRAPH IMPL STARTED  **************************/
 
 typedef struct {
     PyObject_HEAD
     stella::Graph<stella::Node, stella::BaseEdge> *graph;
 } GraphObject;
-
-typedef struct {
-    PyObject_HEAD
-    stella::AdjList<stella::Node, stella::Edge> *adjlist;
-} AdjListObject;
-
-typedef struct {
-    PyObject_HEAD
-    stella::DirectedAdjList<stella::Node, stella::DirectedEdge> *adjlist;
-} DirectedAdjListObject;
-
-typedef struct {
-    PyObject_HEAD
-    stella::AdjMatrix<stella::Node, stella::Edge> *adjmatrix;
-} AdjMatrixObject;
-
-typedef struct {
-    PyObject_HEAD
-    stella::DirectedAdjMatrix<stella::Node, stella::DirectedEdge> *adjmatrix;
-} DirectedAdjMatrixObject;
 
 static int Graph_init(GraphObject *self, PyObject *args, PyObject *kwds) {
     PyErr_SetString(PyExc_TypeError, "Cannot instantiate abstract class 'Graph'");
@@ -460,6 +454,15 @@ static PyTypeObject GraphType = {
     PyType_GenericNew,         /* tp_new */
 };
 
+/* ******************** GRAPH IMPL FINISHED **************************/
+
+/* ******************** ADJLIST IMPL STARTED **************************/
+
+typedef struct {
+    PyObject_HEAD
+    stella::AdjList<stella::Node, stella::Edge> *adjlist;
+} AdjListObject;
+
 static PyObject *AdjList_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
     AdjListObject *self;
     self = (AdjListObject *)type->tp_alloc(type, 0);
@@ -509,7 +512,7 @@ static PyObject* AdjList_addNode(AdjListObject* self, PyObject* args) {
             return NULL;
         }
     } else {
-        PyErr_SetString(PyExc_TypeError, "Invalid arguments for addEdge, expected Node object or str");
+        PyErr_SetString(PyExc_TypeError, "Invalid arguments for add_node, expected Node object or str");
         return NULL;
     }
 }
@@ -549,48 +552,6 @@ static PyObject* AdjList_addEdge(AdjListObject* self, PyObject* args) {
         edgeObject->isOwner = false;
         try {
             ((AdjListObject*) (self))->adjlist->addEdge(edge);
-            Py_RETURN_NONE;
-        } catch (std::invalid_argument ex) {
-            PyErr_SetString(StellaError, ex.what());
-            return NULL;
-        }
-    }
-
-    PyErr_SetString(PyExc_TypeError, "Invalid arguments for add_edge. Expected Edge object or (str, str, str, [int]).");
-    return NULL;
-}
-
-static PyObject* DirectedAdjList_addEdge(DirectedAdjListObject* self, PyObject* args) {
-    PyObject* arg;
-    const char* label;
-    const char* n1_label;
-    const char* n2_label;
-    int weight = 1;
-
-
-    if (PyArg_ParseTuple(args, "sss|i", &label, &n1_label, &n2_label, &weight)) {
-        try {
-            ((DirectedAdjListObject*) (self))->adjlist->addEdge(label, n1_label, n2_label, weight);
-            Py_RETURN_NONE;
-        } catch (std::invalid_argument ex) {
-            PyErr_SetString(StellaError, ex.what());
-            return NULL;
-        }
-    }
-
-    PyErr_Clear();
-
-    if (PyArg_ParseTuple(args, "O", &arg)) {
-        if (!PyObject_IsInstance(arg, (PyObject* )&DirectedEdgeType)) {
-            PyErr_SetString(PyExc_TypeError, "Object must be of DirectedEdge type");
-            return NULL;
-        }
-
-        DirectedEdgeObject* edgeObject = (DirectedEdgeObject*) arg;
-        stella::DirectedEdge* edge = edgeObject->edge;
-        edgeObject->isOwner = false;
-        try {
-            ((DirectedAdjListObject*) (self))->adjlist->addEdge(edge);
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(StellaError, ex.what());
@@ -714,48 +675,6 @@ static PyObject* AdjList_getAllEdges(AdjListObject* self, PyObject* args) {
     return pyEdges;
 }
 
-static PyObject* DirectedAdjList_getAllEdges(DirectedAdjListObject* self, PyObject* args) {
-    std::map<std::string, stella::DirectedEdge*>& edges = self->adjlist->getAllEdges();
-    PyObject* pyEdges = PyDict_New();
-    if (!pyEdges) {
-        PyErr_SetString(PyExc_RuntimeError, "Failed to create Python dictionary");
-        return NULL;
-    }
-
-    for (const auto& pair : edges) {
-        PyObject* key = PyUnicode_FromString(pair.first.c_str());
-        if (!key) {
-            Py_DECREF(pyEdges);
-            PyErr_SetString(PyExc_RuntimeError, "Failed to convert C++ key to Python string");
-            return NULL;
-        }
-
-        DirectedEdgeObject* value = PyObject_New(DirectedEdgeObject, &EdgeType);
-        if (!value) {
-            Py_DECREF(key);
-            Py_DECREF(pyEdges);
-            PyErr_NoMemory();
-            return NULL;
-        }
-
-        value->edge = pair.second;
-        value->isOwner = false;
-
-        if (PyDict_SetItem(pyEdges, key, (PyObject *)value) < 0) {
-            Py_DECREF(key);
-            Py_DECREF(value);
-            Py_DECREF(pyEdges);
-            PyErr_SetString(PyExc_RuntimeError, "Failed to add item to Python dictionary");
-            return NULL;
-        }
-
-        Py_DECREF(key);
-        Py_DECREF(value);
-    }
-
-    return pyEdges;
-}
-
 static PyGetSetDef AdjList_GetSetDef[] = {
     {"edges", (getter)AdjList_getAllEdges, NULL, "Node label", NULL},
     {"nodes", (getter)AdjList_getAllNodes, NULL, "Node label", NULL},
@@ -812,6 +731,15 @@ static PyTypeObject AdjListType = {
     AdjList_new,               /* tp_new */
 };
 
+/* ******************** ADJLIST IMPL FINISHED **************************/
+
+/* ******************** DIRECTEDADJLIST IMPL STARTED **************************/
+
+typedef struct {
+    PyObject_HEAD
+    stella::DirectedAdjList<stella::Node, stella::DirectedEdge> *adjlist;
+} DirectedAdjListObject;
+
 static PyObject *DirectedAdjList_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
     DirectedAdjListObject *self;
     self = (DirectedAdjListObject *)type->tp_alloc(type, 0);
@@ -827,8 +755,113 @@ static int DirectedAdjList_init(DirectedAdjListObject *self, PyObject *args, PyO
     return 0;
 };
 
+static PyObject* DirectedAdjList_addEdge(DirectedAdjListObject* self, PyObject* args) {
+    PyObject* arg;
+    const char* label;
+    const char* n1_label;
+    const char* n2_label;
+    int weight = 1;
+
+
+    if (PyArg_ParseTuple(args, "sss|i", &label, &n1_label, &n2_label, &weight)) {
+        try {
+            ((DirectedAdjListObject*) (self))->adjlist->addEdge(label, n1_label, n2_label, weight);
+            Py_RETURN_NONE;
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
+            return NULL;
+        }
+    }
+
+    PyErr_Clear();
+
+    if (PyArg_ParseTuple(args, "O", &arg)) {
+        if (!PyObject_IsInstance(arg, (PyObject* )&DirectedEdgeType)) {
+            PyErr_SetString(PyExc_TypeError, "Object must be of DirectedEdge type");
+            return NULL;
+        }
+
+        DirectedEdgeObject* edgeObject = (DirectedEdgeObject*) arg;
+        stella::DirectedEdge* edge = edgeObject->edge;
+        edgeObject->isOwner = false;
+        try {
+            ((DirectedAdjListObject*) (self))->adjlist->addEdge(edge);
+            Py_RETURN_NONE;
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
+            return NULL;
+        }
+    }
+
+    PyErr_SetString(PyExc_TypeError, "Invalid arguments for add_edge. Expected Edge object or (str, str, str, [int]).");
+    return NULL;
+}
+
+static PyObject* DirectedAdjList_getEdge(DirectedAdjListObject* self, PyObject* args) {
+    const char* label;
+    if (!PyArg_ParseTuple(args, "s", &label)) {
+        PyErr_SetString(PyExc_ValueError, "No argument for get_edge, str expected");
+        return NULL;
+    }
+
+    stella::DirectedEdge* edge = ((DirectedAdjListObject *) (self))->adjlist->getEdge(label);
+    if (edge) {
+        DirectedEdgeObject* pyEdge = PyObject_New(DirectedEdgeObject, &DirectedEdgeType);
+        if (!pyEdge)
+            PyErr_NoMemory();
+        pyEdge->edge = edge;
+        pyEdge->isOwner = false;
+        return (PyObject *) pyEdge;
+    }
+
+    Py_RETURN_NONE;
+}
+
+static PyObject* DirectedAdjList_getAllEdges(DirectedAdjListObject* self, PyObject* args) {
+    std::map<std::string, stella::DirectedEdge*>& edges = self->adjlist->getAllEdges();
+    PyObject* pyEdges = PyDict_New();
+    if (!pyEdges) {
+        PyErr_SetString(PyExc_RuntimeError, "Failed to create Python dictionary");
+        return NULL;
+    }
+
+    for (const auto& pair : edges) {
+        PyObject* key = PyUnicode_FromString(pair.first.c_str());
+        if (!key) {
+            Py_DECREF(pyEdges);
+            PyErr_SetString(PyExc_RuntimeError, "Failed to convert C++ key to Python string");
+            return NULL;
+        }
+
+        DirectedEdgeObject* value = PyObject_New(DirectedEdgeObject, &DirectedEdgeType);
+        if (!value) {
+            Py_DECREF(key);
+            Py_DECREF(pyEdges);
+            PyErr_NoMemory();
+            return NULL;
+        }
+
+        value->edge = pair.second;
+        value->isOwner = false;
+
+        if (PyDict_SetItem(pyEdges, key, (PyObject *)value) < 0) {
+            Py_DECREF(key);
+            Py_DECREF(value);
+            Py_DECREF(pyEdges);
+            PyErr_SetString(PyExc_RuntimeError, "Failed to add item to Python dictionary");
+            return NULL;
+        }
+
+        Py_DECREF(key);
+        Py_DECREF(value);
+    }
+
+    return pyEdges;
+};
+
 static PyMethodDef DirectedAdjList_methods[] = {
     {"add_edge", (PyCFunction)DirectedAdjList_addEdge, METH_VARARGS, "Add an edge to the graph."},
+    {"get_edge", (PyCFunction)DirectedAdjList_getEdge, METH_VARARGS, "Get an edge from the graph."},
     {NULL, NULL}
 };
 
@@ -877,6 +910,15 @@ static PyTypeObject DirectedAdjListType = {
     0,                         /* tp_alloc */
     DirectedAdjList_new,       /* tp_new */
 };
+
+/* ******************** DIRECTEDADJLIST IMPL FINISHED **************************/
+
+/* ******************** ADJMATRIX IMPL STARTED **************************/
+
+typedef struct {
+    PyObject_HEAD
+    stella::AdjMatrix<stella::Node, stella::Edge> *adjmatrix;
+} AdjMatrixObject;
 
 static PyObject *AdjMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
     AdjMatrixObject *self;
@@ -1161,6 +1203,15 @@ static PyTypeObject AdjMatrixType = {
     AdjMatrix_new,               /* tp_new */
 };
 
+/* ******************** ADJMATRIX IMPL FINISHED **************************/
+
+/* ******************** DIRECTEDADJMATRIX IMPL STARTED **************************/
+
+typedef struct {
+    PyObject_HEAD
+    stella::DirectedAdjMatrix<stella::Node, stella::DirectedEdge> *adjmatrix;
+} DirectedAdjMatrixObject;
+
 static PyObject *DirectedAdjMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
     DirectedAdjMatrixObject *self;
     self = (DirectedAdjMatrixObject *)type->tp_alloc(type, 0);
@@ -1175,6 +1226,41 @@ static int DirectedAdjMatrix_init(DirectedAdjMatrixObject *self, PyObject *args,
     self->adjmatrix = new stella::DirectedAdjMatrix<stella::Node, stella::DirectedEdge>();
     return 0;
 };
+
+static PyObject* DirectedAdjMatrix_addNode(DirectedAdjMatrixObject* self, PyObject* args) {
+    PyObject* arg;
+    if (PyArg_ParseTuple(args, "s", &arg)) {
+        try {
+            self->adjmatrix->addNode(new stella::Node((const char* )arg));
+            Py_RETURN_NONE;
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
+            return NULL;
+        }
+    }
+
+    PyErr_Clear();
+
+    if (PyArg_ParseTuple(args, "O", &arg)) {
+        if (!PyObject_IsInstance(arg, (PyObject* )&NodeType)) {
+            PyErr_SetString(PyExc_TypeError, "Object must be of Node type");
+            return NULL;
+        }
+        NodeObject* nodeObj = (NodeObject*) arg;
+        stella::Node* node = nodeObj->node;
+        nodeObj->isOwner = false;
+        try {
+            self->adjmatrix->addNode(node);
+            Py_RETURN_NONE;
+        } catch (std::invalid_argument ex) {
+            PyErr_SetString(StellaError, ex.what());
+            return NULL;
+        }
+    } else {
+        PyErr_SetString(PyExc_TypeError, "Invalid arguments for add_node, expected Node object or str");
+        return NULL;
+    }
+}
 
 static PyObject* DirectedAdjMatrix_addEdge(DirectedAdjMatrixObject* self, PyObject* args) {
     PyObject* arg;
@@ -1302,6 +1388,7 @@ static PyGetSetDef DirectedAdjMatrix_GetSetDef[] = {
 };
 
 static PyMethodDef DirectedAdjMatrix_methods[] = {
+    {"add_node", (PyCFunction)DirectedAdjMatrix_addNode, METH_VARARGS, "Add a node to the graph."},
     {"add_edge", (PyCFunction)DirectedAdjMatrix_addEdge, METH_VARARGS, "Add an edge to the graph."},
     {NULL, NULL}
 };
@@ -1347,6 +1434,9 @@ static PyTypeObject DirectedAdjMatrixType = {
     DirectedAdjMatrix_new,       /* tp_new */
 };
 
+/* ******************** DIRECTEDADJMATRIX IMPL FINISHED **************************/
+
+/* ******************** MODULE CONFIG IMPL STARTED **************************/
 
 static PyModuleDef stellaModule = {
     PyModuleDef_HEAD_INIT,
@@ -1408,7 +1498,14 @@ PyInit_stella(void) {
     PyModule_AddObject(m, "AdjMatrix", (PyObject *)&AdjMatrixType);
 
     Py_INCREF(&DirectedAdjMatrixType);
-    PyModule_AddObject(m, "DirectedAdjMatrix", (PyObject *)&DirectedAdjMatrixType);
+    if (PyModule_AddObject(m, "DirectedAdjMatrix", (PyObject *)&DirectedAdjMatrixType) < 0) {
+        Py_DECREF(&DirectedAdjMatrixType);
+        Py_DECREF(m);
+        return NULL;
+    }
+
 
     return m;
 }
+
+/* ******************** MODULE CONFIG IMPL FINISHED **************************/
