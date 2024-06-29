@@ -10,12 +10,12 @@
 #include "graph.hpp"
 #include "edge.hpp"
 
-using std::make_shared;
-using std::shared_ptr;
+using std::make_unique;
+using std::unique_ptr;
 
 typedef struct {
     PyObject_HEAD
-    shared_ptr<stella::AdjMatrix<stella::Node, stella::Edge>> adjmatrix;
+    unique_ptr<stella::AdjMatrix<stella::Node, stella::Edge>> adjmatrix;
 } AdjMatrixObject;
 
 PyObject *AdjMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds);

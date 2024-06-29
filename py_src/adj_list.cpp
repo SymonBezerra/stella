@@ -10,7 +10,7 @@ PyObject *AdjList_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 int AdjList_init(AdjListObject *self, PyObject *args, PyObject *kwds) {
-    self->adjlist = new stella::AdjList<stella::Node, stella::Edge>();
+    self->adjlist = make_unique<stella::AdjList<stella::Node, stella::Edge>>();
     return 0;
 }
 
@@ -104,12 +104,12 @@ PyObject* AdjList_getEdge(AdjListObject* self, PyObject* args) {
         return NULL;
     }
 
-    shared_ptr<stella::Edge>* edge = new shared_ptr<stella::Edge>(self->adjlist->getEdge(label));
+    shared_ptr<stella::Edge> edge = self->adjlist->getEdge(label);
     if (edge) {
         EdgeObject* pyEdge = PyObject_New(EdgeObject, &EdgeType);
         if (!pyEdge)
             PyErr_NoMemory();
-        pyEdge->edge = edge;
+        pyEdge->edge = new shared_ptr<stella::Edge>(edge);
         return (PyObject *) pyEdge;
     }
 
@@ -123,14 +123,14 @@ PyObject* AdjList_getNode(AdjListObject* self, PyObject* args) {
         return NULL;
     }
 
-    shared_ptr<stella::Node>* node = new shared_ptr<stella::Node>(self->adjlist->getNode(label));
+    shared_ptr<stella::Node> node = self->adjlist->getNode(label);
     if (node) {
 
         NodeObject* node_obj = PyObject_New(NodeObject, &NodeType);
         if (!node_obj) {
             return PyErr_NoMemory();
         }
-        node_obj->node = node;
+        node_obj->node = new shared_ptr<stella::Node>(node);
 
         return (PyObject*)node_obj;
     }

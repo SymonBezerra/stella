@@ -9,12 +9,12 @@
 #include "graph.hpp"
 #include "edge.hpp"
 
-using std::make_shared;
-using std::shared_ptr;
+using std::make_unique;
+using std::unique_ptr;
 
 typedef struct {
     PyObject_HEAD
-    stella::AdjList<stella::Node, stella::Edge> *adjlist;
+    unique_ptr<stella::AdjList<stella::Node, stella::Edge>> adjlist;
 } AdjListObject;
 
 PyObject *AdjList_new(PyTypeObject *type, PyObject *args, PyObject *kwds);

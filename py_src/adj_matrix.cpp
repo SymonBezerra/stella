@@ -10,7 +10,7 @@ PyObject *AdjMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 int AdjMatrix_init(AdjMatrixObject *self, PyObject *args, PyObject *kwds) {
-    self->adjmatrix = make_shared<stella::AdjMatrix<stella::Node, stella::Edge>>();
+    self->adjmatrix = make_unique<stella::AdjMatrix<stella::Node, stella::Edge>>();
     return 0;
 }
 
@@ -105,14 +105,14 @@ PyObject* AdjMatrix_getNode(AdjMatrixObject* self, PyObject* args) {
         return NULL;
     }
 
-    shared_ptr<stella::Node>* node = new shared_ptr<stella::Node>(self->adjmatrix->getNode(label));
+    shared_ptr<stella::Node> node = self->adjmatrix->getNode(label);
     if (node) {
 
         NodeObject* node_obj = PyObject_New(NodeObject, &NodeType);
         if (!node_obj) {
             return PyErr_NoMemory();
         }
-        node_obj->node = node;
+        node_obj->node = new shared_ptr<stella::Node>(node);
 
         return (PyObject*)node_obj;
     }
