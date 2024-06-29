@@ -10,12 +10,11 @@ PyObject *AdjList_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 int AdjList_init(AdjListObject *self, PyObject *args, PyObject *kwds) {
-    self->adjlist = new stella::AdjList<stella::Node, stella::Edge>();
+    self->adjlist = make_unique<stella::AdjList<stella::Node, stella::Edge>>();
     return 0;
 }
 
 void AdjList_dealloc(AdjListObject* self) {
-    delete self->adjlist;
     Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
@@ -23,7 +22,7 @@ PyObject* AdjList_addNode(AdjListObject* self, PyObject* args) {
     PyObject* arg;
     if (PyArg_ParseTuple(args, "s", &arg)) {
         try {
-            ((AdjListObject*) (self))->adjlist->addNode(new stella::Node((const char* )arg));
+            ((AdjListObject*) (self))->adjlist->addNode(make_shared<stella::Node>((const char* )arg));
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -39,10 +38,10 @@ PyObject* AdjList_addNode(AdjListObject* self, PyObject* args) {
             return NULL;
         }
         NodeObject* nodeObj = (NodeObject*) arg;
-        stella::Node* node = nodeObj->node;
+        shared_ptr<stella::Node>* node = nodeObj->node;
         nodeObj->isOwner = false;
         try {
-            ((AdjListObject*) (self))->adjlist->addNode(node);
+            ((AdjListObject*) (self))->adjlist->addNode(*node);
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -85,10 +84,8 @@ PyObject* AdjList_addEdge(AdjListObject* self, PyObject* args) {
         }
 
         EdgeObject* edgeObject = (EdgeObject*) arg;
-        stella::Edge* edge = edgeObject->edge;
-        edgeObject->isOwner = false;
         try {
-            ((AdjListObject*) (self))->adjlist->addEdge(edge);
+            ((AdjListObject*) (self))->adjlist->addEdge(*(edgeObject->edge));
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -107,13 +104,12 @@ PyObject* AdjList_getEdge(AdjListObject* self, PyObject* args) {
         return NULL;
     }
 
-    stella::Edge* edge = ((AdjListObject*) (self))->adjlist->getEdge(label);
+    shared_ptr<stella::Edge> edge = self->adjlist->getEdge(label);
     if (edge) {
         EdgeObject* pyEdge = PyObject_New(EdgeObject, &EdgeType);
         if (!pyEdge)
             PyErr_NoMemory();
-        pyEdge->edge = edge;
-        pyEdge->isOwner = false;
+        pyEdge->edge = new shared_ptr<stella::Edge>(edge);
         return (PyObject *) pyEdge;
     }
 
@@ -127,15 +123,14 @@ PyObject* AdjList_getNode(AdjListObject* self, PyObject* args) {
         return NULL;
     }
 
-    stella:: Node* node = ((AdjListObject*) (self))->adjlist->getNode(label);
+    shared_ptr<stella::Node> node = self->adjlist->getNode(label);
     if (node) {
 
         NodeObject* node_obj = PyObject_New(NodeObject, &NodeType);
         if (!node_obj) {
             return PyErr_NoMemory();
         }
-        node_obj->node = node;
-        node_obj->isOwner = false;
+        node_obj->node = new shared_ptr<stella::Node>(node);
 
         return (PyObject*)node_obj;
     }
@@ -145,7 +140,7 @@ PyObject* AdjList_getNode(AdjListObject* self, PyObject* args) {
 
 PyObject* AdjList_getAllNodes(AdjListObject* self, PyObject* args) {
 
-    std::vector<stella::Node*>& nodes = ((AdjListObject*) (self))->adjlist->getAllNodes();
+    std::vector<shared_ptr<stella::Node>>& nodes = ((AdjListObject*) (self))->adjlist->getAllNodes();
 
     PyObject* pyNodes = PyList_New(0);
     if (!pyNodes) {
@@ -158,8 +153,7 @@ PyObject* AdjList_getAllNodes(AdjListObject* self, PyObject* args) {
         if (!pyNode) {
             return PyErr_NoMemory();
         }
-        pyNode->node = nodes[i];
-        pyNode->isOwner = false;
+        pyNode->node = new shared_ptr<stella::Node>(nodes[i]);
         if (!pyNode) {
             Py_DECREF(pyNodes);
             PyErr_SetString(PyExc_RuntimeError, "Failed to build Python value");
@@ -171,7 +165,7 @@ PyObject* AdjList_getAllNodes(AdjListObject* self, PyObject* args) {
 }
 
 PyObject* AdjList_getAllEdges(AdjListObject* self, PyObject* args) {
-    std::map<std::string, stella::Edge*>& edges = self->adjlist->getAllEdges();
+    std::map<std::string, shared_ptr<stella::Edge>>& edges = self->adjlist->getAllEdges();
     PyObject* pyEdges = PyDict_New();
     if (!pyEdges) {
         PyErr_SetString(PyExc_RuntimeError, "Failed to create Python dictionary");
@@ -194,8 +188,7 @@ PyObject* AdjList_getAllEdges(AdjListObject* self, PyObject* args) {
             return NULL;
         }
 
-        value->edge = pair.second;
-        value->isOwner = false;
+        value->edge = new shared_ptr<stella::Edge>(pair.second);
 
         if (PyDict_SetItem(pyEdges, key, (PyObject *)value) < 0) {
             Py_DECREF(key);
@@ -310,10 +303,9 @@ PyObject* DirectedAdjList_addEdge(DirectedAdjListObject* self, PyObject* args) {
         }
 
         DirectedEdgeObject* edgeObject = (DirectedEdgeObject*) arg;
-        stella::DirectedEdge* edge = edgeObject->edge;
-        edgeObject->isOwner = false;
+        shared_ptr<stella::DirectedEdge>* edge = edgeObject->edge;
         try {
-            ((DirectedAdjListObject*) (self))->adjlist->addEdge(edge);
+            ((DirectedAdjListObject*) (self))->adjlist->addEdge(*edge);
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -332,13 +324,12 @@ PyObject* DirectedAdjList_getEdge(DirectedAdjListObject* self, PyObject* args) {
         return NULL;
     }
 
-    stella::DirectedEdge* edge = ((DirectedAdjListObject *) (self))->adjlist->getEdge(label);
+    shared_ptr<stella::DirectedEdge>* edge = new shared_ptr<stella::DirectedEdge>(self->adjlist->getEdge(label));
     if (edge) {
         DirectedEdgeObject* pyEdge = PyObject_New(DirectedEdgeObject, &DirectedEdgeType);
         if (!pyEdge)
             PyErr_NoMemory();
         pyEdge->edge = edge;
-        pyEdge->isOwner = false;
         return (PyObject *) pyEdge;
     }
 
@@ -346,7 +337,7 @@ PyObject* DirectedAdjList_getEdge(DirectedAdjListObject* self, PyObject* args) {
 }
 
 PyObject* DirectedAdjList_getAllEdges(DirectedAdjListObject* self, PyObject* args) {
-    std::map<std::string, stella::DirectedEdge*>& edges = self->adjlist->getAllEdges();
+    std::map<std::string, shared_ptr<stella::DirectedEdge>>& edges = self->adjlist->getAllEdges();
     PyObject* pyEdges = PyDict_New();
     if (!pyEdges) {
         PyErr_SetString(PyExc_RuntimeError, "Failed to create Python dictionary");
@@ -369,8 +360,7 @@ PyObject* DirectedAdjList_getAllEdges(DirectedAdjListObject* self, PyObject* arg
             return NULL;
         }
 
-        value->edge = pair.second;
-        value->isOwner = false;
+        value->edge = new shared_ptr<stella::DirectedEdge>(pair.second);
 
         if (PyDict_SetItem(pyEdges, key, (PyObject *)value) < 0) {
             Py_DECREF(key);

@@ -1,6 +1,8 @@
 #ifndef ADJ_MATRIX_PYTHON_HPP
 #define ADJ_MATRIX_PYTHON_HPP
 
+#include<memory>
+
 #include <python3.11/Python.h>
 
 #include "../cpp_src/stella.hpp"
@@ -8,9 +10,12 @@
 #include "graph.hpp"
 #include "edge.hpp"
 
+using std::make_unique;
+using std::unique_ptr;
+
 typedef struct {
     PyObject_HEAD
-    stella::AdjMatrix<stella::Node, stella::Edge> *adjmatrix;
+    unique_ptr<stella::AdjMatrix<stella::Node, stella::Edge>> adjmatrix;
 } AdjMatrixObject;
 
 PyObject *AdjMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -33,7 +38,7 @@ extern PyTypeObject AdjMatrixType;
 
 typedef struct {
     PyObject_HEAD
-    stella::DirectedAdjMatrix<stella::Node, stella::DirectedEdge> *adjmatrix;
+    shared_ptr<stella::DirectedAdjMatrix<stella::Node, stella::DirectedEdge>> adjmatrix;
 } DirectedAdjMatrixObject;
 
 PyObject *DirectedAdjMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds);

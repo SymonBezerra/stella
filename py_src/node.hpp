@@ -1,12 +1,17 @@
 #ifndef NODE_PYTHON_HPP
 #define NODE_PYTHON_HPP
 
+#include <memory>
+#include <sstream>
 #include <python3.11/Python.h>
 #include "../cpp_src/stella.hpp"
 
+using std::make_shared;
+using std::shared_ptr;
+
 typedef struct {
     PyObject_HEAD
-    stella::Node *node;
+    shared_ptr<stella::Node>* node;
     bool isOwner;
 } NodeObject;
 

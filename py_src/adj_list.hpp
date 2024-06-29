@@ -1,6 +1,7 @@
 #ifndef ADJ_LIST_PYTHON_HPP
 #define ADJ_LIST_PYTHON_HPP
 
+#include <memory>
 #include <python3.11/Python.h>
 
 #include "../cpp_src/stella.hpp"
@@ -8,9 +9,12 @@
 #include "graph.hpp"
 #include "edge.hpp"
 
+using std::make_unique;
+using std::unique_ptr;
+
 typedef struct {
     PyObject_HEAD
-    stella::AdjList<stella::Node, stella::Edge> *adjlist;
+    unique_ptr<stella::AdjList<stella::Node, stella::Edge>> adjlist;
 } AdjListObject;
 
 PyObject *AdjList_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
