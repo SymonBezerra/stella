@@ -45,7 +45,7 @@ PyObject *BaseEdge_n1(BaseEdgeObject *self) {
 }
 
 PyObject *BaseEdge_n2(BaseEdgeObject *self) {
-    shared_ptr<stella::Node> node =  self->edge->get()->getN1();
+    shared_ptr<stella::Node> node =  self->edge->get()->getN2();
     NodeObject* nodeObject = PyObject_New(NodeObject, &NodeType);
     nodeObject->node = new shared_ptr<stella::Node>(node);
     return (PyObject *) nodeObject;
