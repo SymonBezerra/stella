@@ -1,12 +1,15 @@
 #ifndef GRAPH_PYTHON_HPP
 #define GRAPH_PYTHON_HPP
 
+#include <memory>
 #include <python3.11/Python.h>
 #include "../cpp_src/stella.hpp"
 
+using std::shared_ptr;
+
 typedef struct {
     PyObject_HEAD
-    stella::Graph<stella::Node, stella::BaseEdge> *graph;
+    shared_ptr<stella::Graph<stella::Node, stella::BaseEdge>> graph;
 } GraphObject;
 
 int Graph_init(GraphObject *self, PyObject *args, PyObject *kwds);

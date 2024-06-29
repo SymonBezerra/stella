@@ -10,12 +10,11 @@ PyObject *AdjMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
 }
 
 int AdjMatrix_init(AdjMatrixObject *self, PyObject *args, PyObject *kwds) {
-    self->adjmatrix = new stella::AdjMatrix<stella::Node, stella::Edge>();
+    self->adjmatrix = make_shared<stella::AdjMatrix<stella::Node, stella::Edge>>();
     return 0;
 }
 
 void AdjMatrix_dealloc(AdjMatrixObject* self) {
-    delete self->adjmatrix;
     Py_TYPE(self)->tp_free((PyObject *) self);
 }
 
@@ -23,7 +22,7 @@ PyObject* AdjMatrix_addNode(AdjMatrixObject* self, PyObject* args) {
     PyObject* arg;
     if (PyArg_ParseTuple(args, "s", &arg)) {
         try {
-            self->adjmatrix->addNode(new stella::Node((const char* )arg));
+            self->adjmatrix->addNode(make_shared<stella::Node>((const char* )arg));
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -39,7 +38,7 @@ PyObject* AdjMatrix_addNode(AdjMatrixObject* self, PyObject* args) {
             return NULL;
         }
         NodeObject* nodeObj = (NodeObject*) arg;
-        stella::Node* node = nodeObj->node;
+        shared_ptr<stella::Node> node = nodeObj->node;
         nodeObj->isOwner = false;
         try {
             self->adjmatrix->addNode(node);
@@ -85,8 +84,7 @@ PyObject* AdjMatrix_addEdge(AdjMatrixObject* self, PyObject* args) {
         }
 
         EdgeObject* edgeObject = (EdgeObject*) arg;
-        stella::Edge* edge = edgeObject->edge;
-        edgeObject->isOwner = false;
+        shared_ptr<stella::Edge> edge = edgeObject->edge;
         try {
             self->adjmatrix->addEdge(edge);
             Py_RETURN_NONE;
@@ -107,7 +105,7 @@ PyObject* AdjMatrix_getNode(AdjMatrixObject* self, PyObject* args) {
         return NULL;
     }
 
-    stella:: Node* node = self->adjmatrix->getNode(label);
+    shared_ptr<stella::Node> node = self->adjmatrix->getNode(label);
     if (node) {
 
         NodeObject* node_obj = PyObject_New(NodeObject, &NodeType);
@@ -115,7 +113,6 @@ PyObject* AdjMatrix_getNode(AdjMatrixObject* self, PyObject* args) {
             return PyErr_NoMemory();
         }
         node_obj->node = node;
-        node_obj->isOwner = false;
 
         return (PyObject*)node_obj;
     }
@@ -125,7 +122,7 @@ PyObject* AdjMatrix_getNode(AdjMatrixObject* self, PyObject* args) {
 
 PyObject* AdjMatrix_getAllNodes(AdjMatrixObject* self, PyObject* args) {
 
-    std::vector<stella::Node*>& nodes = self->adjmatrix->getAllNodes();
+    std::vector<shared_ptr<stella::Node>>& nodes = self->adjmatrix->getAllNodes();
 
     PyObject* pyNodes = PyList_New(0);
     if (!pyNodes) {
@@ -151,7 +148,7 @@ PyObject* AdjMatrix_getAllNodes(AdjMatrixObject* self, PyObject* args) {
 }
 
 PyObject* AdjMatrix_getAllEdges(AdjMatrixObject* self, PyObject* args) {
-    std::vector<std::vector<std::map<std::string, stella::Edge*>>>& edges = self->adjmatrix->getAllEdges();
+    std::vector<std::vector<std::map<std::string, shared_ptr<stella::Edge>>>>& edges = self->adjmatrix->getAllEdges();
 
     PyObject* pyEdges = PyList_New(edges.size());
     if (!pyEdges) {
@@ -201,7 +198,6 @@ PyObject* AdjMatrix_getAllEdges(AdjMatrixObject* self, PyObject* args) {
                 }
 
                 value->edge = pair.second;
-                value->isOwner = false;
 
                 if (PyDict_SetItem(pyDict, key, (PyObject*)value) < 0) {
                     Py_DECREF(key);
@@ -294,7 +290,7 @@ PyObject *DirectedAdjMatrix_new(PyTypeObject *type, PyObject *args, PyObject *kw
 
 
 int DirectedAdjMatrix_init(DirectedAdjMatrixObject *self, PyObject *args, PyObject *kwds) {
-    self->adjmatrix = new stella::DirectedAdjMatrix<stella::Node, stella::DirectedEdge>();
+    self->adjmatrix =  make_shared<stella::DirectedAdjMatrix<stella::Node, stella::DirectedEdge>>();
     return 0;
 };
 
@@ -302,7 +298,7 @@ PyObject* DirectedAdjMatrix_addNode(DirectedAdjMatrixObject* self, PyObject* arg
     PyObject* arg;
     if (PyArg_ParseTuple(args, "s", &arg)) {
         try {
-            self->adjmatrix->addNode(new stella::Node((const char* )arg));
+            self->adjmatrix->addNode(make_shared<stella::Node>((const char* )arg));
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -318,7 +314,7 @@ PyObject* DirectedAdjMatrix_addNode(DirectedAdjMatrixObject* self, PyObject* arg
             return NULL;
         }
         NodeObject* nodeObj = (NodeObject*) arg;
-        stella::Node* node = nodeObj->node;
+        shared_ptr<stella::Node> node = nodeObj->node;
         nodeObj->isOwner = false;
         try {
             self->adjmatrix->addNode(node);
@@ -360,8 +356,7 @@ PyObject* DirectedAdjMatrix_addEdge(DirectedAdjMatrixObject* self, PyObject* arg
         }
 
         DirectedEdgeObject* edgeObject = (DirectedEdgeObject*) arg;
-        stella::DirectedEdge* edge = edgeObject->edge;
-        edgeObject->isOwner = false;
+        shared_ptr<stella::DirectedEdge> edge = edgeObject->edge;
         try {
             self->adjmatrix->addEdge(edge);
             Py_RETURN_NONE;
@@ -376,7 +371,7 @@ PyObject* DirectedAdjMatrix_addEdge(DirectedAdjMatrixObject* self, PyObject* arg
 }
 
 PyObject* DirectedAdjMatrix_getAllEdges(DirectedAdjMatrixObject* self, PyObject* args) {
-    std::vector<std::vector<std::map<std::string, stella::DirectedEdge*>>>& edges = self->adjmatrix->getAllEdges();
+    std::vector<std::vector<std::map<std::string, shared_ptr<stella::DirectedEdge>>>>& edges = self->adjmatrix->getAllEdges();
 
     PyObject* pyEdges = PyList_New(edges.size());
     if (!pyEdges) {
@@ -426,7 +421,6 @@ PyObject* DirectedAdjMatrix_getAllEdges(DirectedAdjMatrixObject* self, PyObject*
                 }
 
                 value->edge = pair.second;
-                value->isOwner = false;
 
                 if (PyDict_SetItem(pyDict, key, (PyObject*)value) < 0) {
                     Py_DECREF(key);

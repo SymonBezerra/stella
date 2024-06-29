@@ -1,7 +1,6 @@
 #include "edge.hpp"
 
 void BaseEdge_dealloc(BaseEdgeObject *self) {
-    if (self->isOwner) delete self->edge;
     Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
@@ -21,9 +20,9 @@ int BaseEdge_init(BaseEdgeObject *self, PyObject *args, PyObject *kwds) {
     if (!PyArg_ParseTuple(args, "sOO|i", &label, &n1_obj, &n2_obj, &weight)) {
         return -1;
     }
-    stella::Node *n1 = (stella::Node *) n1_obj->node;
-    stella::Node *n2 = (stella::Node *) n2_obj->node;
-    self->edge = new stella::BaseEdge(label, n1, n2, weight);
+    shared_ptr<stella::Node> n1 = n1_obj->node;
+    shared_ptr<stella::Node> n2 = n2_obj->node;
+    self->edge = make_shared<stella::BaseEdge>(label, n1, n2, weight);
     return 0;
 }
 
@@ -38,18 +37,16 @@ PyObject *BaseEdge_label(BaseEdgeObject *self) {
 }
 
 PyObject *BaseEdge_n1(BaseEdgeObject *self) {
-    stella::Node* node = (stella::Node*) self->edge->getN1();
+    shared_ptr<stella::Node> node = self->edge->getN1();
     NodeObject* nodeObject = PyObject_New(NodeObject, &NodeType);
     nodeObject->node = node;
-    nodeObject->isOwner = false;
     return (PyObject *) nodeObject;
 }
 
 PyObject *BaseEdge_n2(BaseEdgeObject *self) {
-    stella::Node *node = (stella::Node *) self->edge->getN1();
+    shared_ptr<stella::Node> node =  self->edge->getN1();
     NodeObject* nodeObject = PyObject_New(NodeObject, &NodeType);
     nodeObject->node = node;
-    nodeObject->isOwner = false;
     return (PyObject *) nodeObject;
 }
 

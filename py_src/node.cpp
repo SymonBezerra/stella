@@ -1,7 +1,6 @@
 #include "node.hpp"
 
 void Node_dealloc(NodeObject *self) {
-    if (self->isOwner) delete self->node;
     Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
@@ -19,7 +18,7 @@ int Node_init(NodeObject *self, PyObject *args, PyObject *kwds) {
     if (!PyArg_ParseTuple(args, "s", &label)) {
         return -1;
     }
-    self->node = new stella::Node(label);
+    self->node = make_shared<stella::Node>(label);
     return 0;
 }
 

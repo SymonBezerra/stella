@@ -3,11 +3,14 @@
 
 #include <exception>
 #include <map>
+#include <memory>
 
 #include "graph.tpp"
 
 using std::invalid_argument;
+using std::make_shared;
 using std::map;
+using std::shared_ptr;
 
 namespace stella {
 
@@ -16,16 +19,16 @@ namespace stella {
         static_assert(is_base_of<Edge, E>::value, "E must be of type stella::Edge for non-directed graphs");
     protected:
         void pushNode(int size) {
-            edges.push_back(vector<map<string, E*>>{});
+            edges.push_back(vector<map<string, shared_ptr<E>>>{});
             for(int i = size - 1; i >= 0; i--) {
-                edges[i].push_back(map<string, E*>{});
+                edges[i].push_back(map<string, shared_ptr<E>>{});
             }
         }
-        vector<N*> nodes;
-        vector<vector<map<string, E*>>> edges;
+        vector<shared_ptr<N>> nodes;
+        vector<vector<map<string, shared_ptr<E>>>> edges;
     public:
         AdjMatrix() {}
-        void addNode(N* node) {
+        void addNode(shared_ptr<N> node) {
             if (getNode(node->getLabel()))
                 throw invalid_argument("Node already exists: " + node->getLabel());
             nodes.push_back(node);
@@ -34,11 +37,11 @@ namespace stella {
         void addNode(std::string label) {
             if (getNode(label))
                 throw invalid_argument("Node already exists: " + label);
-            N* node = new N(label);
+            shared_ptr<N> node = make_shared<N>(label);
             nodes.push_back(node);
             pushNode(nodes.size());
         }
-        void addEdge(E* edge) {
+        void addEdge(shared_ptr<E> edge) {
         int n1 = getNodeIndex(edge->getN1()->getLabel());
         int n2 = getNodeIndex(edge->getN2()->getLabel());
         if (n1 < 0 || n2 < 0)
@@ -54,7 +57,7 @@ namespace stella {
             int node2 = getNodeIndex(n2);
             if (node1 < 0 || node2 < 0)
                 throw invalid_argument("Node labels not found: " + n1 + " " + n2);
-            E* edge = new E(label, nodes[node1], nodes[node2], 1);
+            shared_ptr<E> edge = make_shared<E>(label, nodes[node1], nodes[node2], 1);
             if (node1 > node2) edges[node1][node2].insert({edge->getLabel(), edge});
             else if (node2 == node1) edges[node1][0].insert({edge->getLabel(), edge});
             else edges[node2][node1].insert({edge->getLabel(), edge});
@@ -65,13 +68,13 @@ namespace stella {
             int node2 = getNodeIndex(n2);
             if (node1 < 0 || node2 < 0)
                 throw invalid_argument("Node labels not found: " + n1 + " " + n2);
-            E* edge = new E(label, nodes[node1], nodes[node2], weight);
+            shared_ptr<E> edge = make_shared<E>(label, nodes[node1], nodes[node2], weight);
             if (node2 > node1) edges[node1][node2].insert({edge->getLabel(), edge});
             else if (node2 == node1) edges[node1][0].insert({edge->getLabel(), edge});
             else edges[node2][node1].insert({edge->getLabel(), edge});
         }
-            N* getNode(std::string label) {
-                for (N* node : nodes) {
+            shared_ptr<N> getNode(std::string label) {
+                for (shared_ptr<N> node : nodes) {
                     if (node->getLabel().compare(label) == 0) return node;
                 }
                 return nullptr;
@@ -86,31 +89,31 @@ namespace stella {
                 }
                 return -1;
             }
-            std::vector<N*>& getAllNodes() {
+            std::vector<shared_ptr<N>>& getAllNodes() {
                 return nodes;
             }
-            std::vector<std::vector<std::map<string, E*>>>& getAllEdges() {
+            std::vector<std::vector<std::map<string, shared_ptr<E>>>>& getAllEdges() {
                 return edges;
             }
-            ~AdjMatrix() {
-                int size = nodes.size();
-                int dec = 0;
-                for (int i = 0; i < size; i++, dec++) {
-                    for (int j = 0; j < size - dec; j++) {
-                        map<string, E*>& edgeMap = edges[i][j];
-                        for (auto it = edgeMap.begin(); it != edgeMap.end(); ++it) {
-                            delete it->second;
-                        }
-                        edgeMap.clear();
-                    }
-                }
+            // ~AdjMatrix() {
+            //     int size = nodes.size();
+            //     int dec = 0;
+            //     for (int i = 0; i < size; i++, dec++) {
+            //         for (int j = 0; j < size - dec; j++) {
+            //             map<string, shared_ptr<E>>& edgeMap = edges[i][j];
+            //             for (auto it = edgeMap.begin(); it != edgeMap.end(); ++it) {
+            //                 delete it->second;
+            //             }
+            //             edgeMap.clear();
+            //         }
+            //     }
 
-                for (int i = 0; i < nodes.size(); i++)
-                    delete nodes[i];
+            //     for (int i = 0; i < nodes.size(); i++)
+            //         delete nodes[i];
 
-                edges.clear();
-                nodes.clear();
-            }
+            //     edges.clear();
+            //     nodes.clear();
+            // }
     };
 
     template<typename N, typename E>
@@ -118,18 +121,18 @@ namespace stella {
         static_assert(std::is_base_of<DirectedEdge, E>::value, "E must be of type stella::DirectedEdge for directed graphs");
     protected:
         void pushNode(int size) {
-            this->edges.push_back(vector<map<string, E*>>{});
+            this->edges.push_back(vector<map<string, shared_ptr<E>>>{});
             for(int i = 0; i < size; i++) {
                 if (i != size - 1)
-                    this->edges[i].push_back(map<string, E*>{});
+                    this->edges[i].push_back(map<string, shared_ptr<E>>{});
                 else
                     for (int j = 0; j < size; j++)
-                        this->edges[i].push_back(map<string, E*>{});
+                        this->edges[i].push_back(map<string, shared_ptr<E>>{});
             }
         }
     public:
         DirectedAdjMatrix() : AdjMatrix<N, E>() {}
-        void addNode(N* node) {
+        void addNode(shared_ptr<N> node) {
             if (this->getNode(node->getLabel()))
                 throw invalid_argument("Node already exists: " + node->getLabel());
             this->nodes.push_back(node);
@@ -138,11 +141,11 @@ namespace stella {
         void addNode(std::string label) {
             if (this->getNode(label))
                 throw invalid_argument("Node already exists: " + label);
-            N* node = new N(label);
+            shared_ptr<N> node = make_shared<N>(label);
             this->nodes.push_back(node);
             pushNode(this->nodes.size());
         }
-        void addEdge(E* edge) {
+        void addEdge(shared_ptr<E> edge) {
             int n1 = this->getNodeIndex(edge->getN1()->getLabel());
             int n2 = this->getNodeIndex(edge->getN2()->getLabel());
             if (n1 < 0 || n2 < 0)
@@ -155,7 +158,7 @@ namespace stella {
             int node2 = this->getNodeIndex(n2);
             if (node1 < 0 || node2 < 0)
                 throw invalid_argument("Node labels not found: " + n1 + " " + n2);
-            E* edge = new E(label, this->nodes[node1], this->nodes[node2], 1);
+            shared_ptr<E> edge = make_shared<E>(label, this->nodes[node1], this->nodes[node2], 1);
             this->edges[node1][node2].insert({edge->getLabel(), edge});
         }
 
@@ -164,27 +167,27 @@ namespace stella {
             int node2 = this->getNodeIndex(n2);
             if (node1 < 0 || node2 < 0)
                 throw invalid_argument("Node labels not found: " + n1 + " " + n2);
-            E* edge = new E(label, this->nodes[node1], this->nodes[node2], weight);
+            shared_ptr<E> edge = make_shared<E>(label, this->nodes[node1], this->nodes[node2], weight);
             this->edges[node1][node2].insert({edge->getLabel(), edge});
         }
-        ~DirectedAdjMatrix() {
-            int size = this->nodes.size();
-            for (int i = 0; i < size; i++) {
-                for (int j = 0; j < size; j++) {
-                    map<string, E*>& edgeMap = this->edges[i][j];
-                    for (auto it = edgeMap.begin(); it != edgeMap.end(); ++it) {
-                        delete it->second;
-                    }
-                    edgeMap.clear();
-                }
-            }
+        // ~DirectedAdjMatrix() {
+        //     int size = this->nodes.size();
+        //     for (int i = 0; i < size; i++) {
+        //         for (int j = 0; j < size; j++) {
+        //             map<string, shared_ptr<E>>& edgeMap = this->edges[i][j];
+        //             for (auto it = edgeMap.begin(); it != edgeMap.end(); ++it) {
+        //                 delete it->second;
+        //             }
+        //             edgeMap.clear();
+        //         }
+        //     }
 
-            for (int i = 0; i < this->nodes.size(); i++)
-                delete this->nodes[i];
+        //     for (int i = 0; i < this->nodes.size(); i++)
+        //         delete this->nodes[i];
 
-            this->edges.clear();
-            this->nodes.clear();
-        }
+        //     this->edges.clear();
+        //     this->nodes.clear();
+        // }
     };
 };
 

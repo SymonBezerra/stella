@@ -6,7 +6,6 @@ int Graph_init(GraphObject *self, PyObject *args, PyObject *kwds) {
 }
 
 void Graph_dealloc(GraphObject *self) {
-    delete self->graph;
     Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
