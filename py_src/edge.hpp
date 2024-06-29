@@ -13,7 +13,7 @@ using std::shared_ptr;
 
 typedef struct {
     PyObject_HEAD
-    shared_ptr<stella::BaseEdge> edge;
+    shared_ptr<stella::BaseEdge>* edge;
 } BaseEdgeObject;
 
 void BaseEdge_dealloc(BaseEdgeObject *self);
@@ -36,7 +36,7 @@ extern PyTypeObject BaseEdgeType;
 
 typedef struct {
     PyObject_HEAD
-    shared_ptr<stella::Edge> edge;
+    shared_ptr<stella::Edge>* edge;
 } EdgeObject;
 
 extern PyTypeObject EdgeType;
@@ -45,7 +45,7 @@ extern PyTypeObject EdgeType;
 
 typedef struct {
     PyObject_HEAD
-    shared_ptr<stella::DirectedEdge> edge;
+    shared_ptr<stella::DirectedEdge>* edge;
 } DirectedEdgeObject;
 
 PyObject *DirectedEdge_str(DirectedEdgeObject *self);

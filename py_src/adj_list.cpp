@@ -38,10 +38,10 @@ PyObject* AdjList_addNode(AdjListObject* self, PyObject* args) {
             return NULL;
         }
         NodeObject* nodeObj = (NodeObject*) arg;
-        shared_ptr<stella::Node> node = nodeObj->node;
+        shared_ptr<stella::Node>* node = nodeObj->node;
         nodeObj->isOwner = false;
         try {
-            ((AdjListObject*) (self))->adjlist->addNode(node);
+            ((AdjListObject*) (self))->adjlist->addNode(*node);
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -84,9 +84,8 @@ PyObject* AdjList_addEdge(AdjListObject* self, PyObject* args) {
         }
 
         EdgeObject* edgeObject = (EdgeObject*) arg;
-        shared_ptr<stella::Edge> edge = edgeObject->edge;
         try {
-            ((AdjListObject*) (self))->adjlist->addEdge(edge);
+            ((AdjListObject*) (self))->adjlist->addEdge(*(edgeObject->edge));
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -105,7 +104,7 @@ PyObject* AdjList_getEdge(AdjListObject* self, PyObject* args) {
         return NULL;
     }
 
-    shared_ptr<stella::Edge> edge = ((AdjListObject*) (self))->adjlist->getEdge(label);
+    shared_ptr<stella::Edge>* edge = new shared_ptr<stella::Edge>(self->adjlist->getEdge(label));
     if (edge) {
         EdgeObject* pyEdge = PyObject_New(EdgeObject, &EdgeType);
         if (!pyEdge)
@@ -124,7 +123,7 @@ PyObject* AdjList_getNode(AdjListObject* self, PyObject* args) {
         return NULL;
     }
 
-    shared_ptr<stella::Node> node = ((AdjListObject*) (self))->adjlist->getNode(label);
+    shared_ptr<stella::Node>* node = new shared_ptr<stella::Node>(self->adjlist->getNode(label));
     if (node) {
 
         NodeObject* node_obj = PyObject_New(NodeObject, &NodeType);
@@ -154,7 +153,7 @@ PyObject* AdjList_getAllNodes(AdjListObject* self, PyObject* args) {
         if (!pyNode) {
             return PyErr_NoMemory();
         }
-        pyNode->node = make_shared<stella::Node>(*(nodes[i]));
+        pyNode->node = new shared_ptr<stella::Node>(nodes[i]);
         if (!pyNode) {
             Py_DECREF(pyNodes);
             PyErr_SetString(PyExc_RuntimeError, "Failed to build Python value");
@@ -189,7 +188,7 @@ PyObject* AdjList_getAllEdges(AdjListObject* self, PyObject* args) {
             return NULL;
         }
 
-        value->edge = pair.second;
+        value->edge = new shared_ptr<stella::Edge>(pair.second);
 
         if (PyDict_SetItem(pyEdges, key, (PyObject *)value) < 0) {
             Py_DECREF(key);
@@ -304,9 +303,9 @@ PyObject* DirectedAdjList_addEdge(DirectedAdjListObject* self, PyObject* args) {
         }
 
         DirectedEdgeObject* edgeObject = (DirectedEdgeObject*) arg;
-        shared_ptr<stella::DirectedEdge> edge = edgeObject->edge;
+        shared_ptr<stella::DirectedEdge>* edge = edgeObject->edge;
         try {
-            ((DirectedAdjListObject*) (self))->adjlist->addEdge(edge);
+            ((DirectedAdjListObject*) (self))->adjlist->addEdge(*edge);
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -325,7 +324,7 @@ PyObject* DirectedAdjList_getEdge(DirectedAdjListObject* self, PyObject* args) {
         return NULL;
     }
 
-    shared_ptr<stella::DirectedEdge> edge = ((DirectedAdjListObject *) (self))->adjlist->getEdge(label);
+    shared_ptr<stella::DirectedEdge>* edge = new shared_ptr<stella::DirectedEdge>(self->adjlist->getEdge(label));
     if (edge) {
         DirectedEdgeObject* pyEdge = PyObject_New(DirectedEdgeObject, &DirectedEdgeType);
         if (!pyEdge)
@@ -361,7 +360,7 @@ PyObject* DirectedAdjList_getAllEdges(DirectedAdjListObject* self, PyObject* arg
             return NULL;
         }
 
-        value->edge = pair.second;
+        value->edge = new shared_ptr<stella::DirectedEdge>(pair.second);
 
         if (PyDict_SetItem(pyEdges, key, (PyObject *)value) < 0) {
             Py_DECREF(key);

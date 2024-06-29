@@ -1,6 +1,7 @@
 #include "edge.hpp"
 
 void BaseEdge_dealloc(BaseEdgeObject *self) {
+    delete self->edge;
     Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
@@ -20,38 +21,38 @@ int BaseEdge_init(BaseEdgeObject *self, PyObject *args, PyObject *kwds) {
     if (!PyArg_ParseTuple(args, "sOO|i", &label, &n1_obj, &n2_obj, &weight)) {
         return -1;
     }
-    shared_ptr<stella::Node> n1 = n1_obj->node;
-    shared_ptr<stella::Node> n2 = n2_obj->node;
-    self->edge = make_shared<stella::BaseEdge>(label, n1, n2, weight);
+    shared_ptr<stella::Node>* n1 = n1_obj->node;
+    shared_ptr<stella::Node>* n2 = n2_obj->node;
+    self->edge = new (shared_ptr<stella::BaseEdge>) (make_shared<stella::BaseEdge>(label, *n1, *n2, weight));
     return 0;
 }
 
 PyObject *BaseEdge_str(BaseEdgeObject *self) {
     std::ostringstream oss;
-    oss << self->edge;
+    oss << self->edge->get();
     return PyUnicode_FromString(oss.str().c_str());
 }
 
 PyObject *BaseEdge_label(BaseEdgeObject *self) {
-    return PyUnicode_FromString(self->edge->getLabel().c_str());
+    return PyUnicode_FromString(self->edge->get()->getLabel().c_str());
 }
 
 PyObject *BaseEdge_n1(BaseEdgeObject *self) {
-    shared_ptr<stella::Node> node = self->edge->getN1();
+    shared_ptr<stella::Node> node = self->edge->get()->getN1();
     NodeObject* nodeObject = PyObject_New(NodeObject, &NodeType);
-    nodeObject->node = node;
+    nodeObject->node = new shared_ptr<stella::Node>(node);
     return (PyObject *) nodeObject;
 }
 
 PyObject *BaseEdge_n2(BaseEdgeObject *self) {
-    shared_ptr<stella::Node> node =  self->edge->getN1();
+    shared_ptr<stella::Node> node =  self->edge->get()->getN1();
     NodeObject* nodeObject = PyObject_New(NodeObject, &NodeType);
-    nodeObject->node = node;
+    nodeObject->node = new shared_ptr<stella::Node>(node);
     return (PyObject *) nodeObject;
 }
 
 PyObject *BaseEdge_weight(BaseEdgeObject* self) {
-    int weight = self->edge->getWeight();
+    int weight = self->edge->get()->getWeight();
     return PyLong_FromLong(weight);
 }
 
@@ -147,7 +148,7 @@ PyTypeObject EdgeType = {
 
 PyObject *DirectedEdge_str(DirectedEdgeObject *self) {
     std::ostringstream oss;
-    oss << self->edge;
+    oss << self->edge->get();
     return PyUnicode_FromString(oss.str().c_str());
 }
 

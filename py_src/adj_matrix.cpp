@@ -38,10 +38,10 @@ PyObject* AdjMatrix_addNode(AdjMatrixObject* self, PyObject* args) {
             return NULL;
         }
         NodeObject* nodeObj = (NodeObject*) arg;
-        shared_ptr<stella::Node> node = nodeObj->node;
+        shared_ptr<stella::Node>* node = nodeObj->node;
         nodeObj->isOwner = false;
         try {
-            self->adjmatrix->addNode(node);
+            self->adjmatrix->addNode(*node);
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -84,9 +84,9 @@ PyObject* AdjMatrix_addEdge(AdjMatrixObject* self, PyObject* args) {
         }
 
         EdgeObject* edgeObject = (EdgeObject*) arg;
-        shared_ptr<stella::Edge> edge = edgeObject->edge;
+        shared_ptr<stella::Edge>* edge = edgeObject->edge;
         try {
-            self->adjmatrix->addEdge(edge);
+            self->adjmatrix->addEdge(*edge);
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -105,7 +105,7 @@ PyObject* AdjMatrix_getNode(AdjMatrixObject* self, PyObject* args) {
         return NULL;
     }
 
-    shared_ptr<stella::Node> node = self->adjmatrix->getNode(label);
+    shared_ptr<stella::Node>* node = new shared_ptr<stella::Node>(self->adjmatrix->getNode(label));
     if (node) {
 
         NodeObject* node_obj = PyObject_New(NodeObject, &NodeType);
@@ -135,7 +135,7 @@ PyObject* AdjMatrix_getAllNodes(AdjMatrixObject* self, PyObject* args) {
         if (!pyNode) {
             return PyErr_NoMemory();
         }
-        pyNode->node = nodes[i];
+        pyNode->node = new shared_ptr<stella::Node>(nodes[i]);
         pyNode->isOwner = false;
         if (!pyNode) {
             Py_DECREF(pyNodes);
@@ -197,7 +197,7 @@ PyObject* AdjMatrix_getAllEdges(AdjMatrixObject* self, PyObject* args) {
                     return NULL;
                 }
 
-                value->edge = pair.second;
+                value->edge = new shared_ptr<stella::Edge>(pair.second);
 
                 if (PyDict_SetItem(pyDict, key, (PyObject*)value) < 0) {
                     Py_DECREF(key);
@@ -314,10 +314,10 @@ PyObject* DirectedAdjMatrix_addNode(DirectedAdjMatrixObject* self, PyObject* arg
             return NULL;
         }
         NodeObject* nodeObj = (NodeObject*) arg;
-        shared_ptr<stella::Node> node = nodeObj->node;
+        shared_ptr<stella::Node>* node = nodeObj->node;
         nodeObj->isOwner = false;
         try {
-            self->adjmatrix->addNode(node);
+            self->adjmatrix->addNode(*node);
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -356,9 +356,9 @@ PyObject* DirectedAdjMatrix_addEdge(DirectedAdjMatrixObject* self, PyObject* arg
         }
 
         DirectedEdgeObject* edgeObject = (DirectedEdgeObject*) arg;
-        shared_ptr<stella::DirectedEdge> edge = edgeObject->edge;
+        shared_ptr<stella::DirectedEdge>* edge = edgeObject->edge;
         try {
-            self->adjmatrix->addEdge(edge);
+            self->adjmatrix->addEdge(*edge);
             Py_RETURN_NONE;
         } catch (std::invalid_argument ex) {
             PyErr_SetString(PyExc_RuntimeError, ex.what());
@@ -420,7 +420,7 @@ PyObject* DirectedAdjMatrix_getAllEdges(DirectedAdjMatrixObject* self, PyObject*
                     return NULL;
                 }
 
-                value->edge = pair.second;
+                value->edge = new shared_ptr<stella::DirectedEdge>(pair.second);
 
                 if (PyDict_SetItem(pyDict, key, (PyObject*)value) < 0) {
                     Py_DECREF(key);

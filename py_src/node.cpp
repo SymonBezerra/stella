@@ -1,6 +1,7 @@
 #include "node.hpp"
 
 void Node_dealloc(NodeObject *self) {
+    delete self->node;
     Py_TYPE(self)->tp_free((PyObject *)self);
 }
 
@@ -18,12 +19,12 @@ int Node_init(NodeObject *self, PyObject *args, PyObject *kwds) {
     if (!PyArg_ParseTuple(args, "s", &label)) {
         return -1;
     }
-    self->node = make_shared<stella::Node>(label);
+    self->node = new (shared_ptr<stella::Node>) (make_shared<stella::Node>(label));
     return 0;
 }
 
 PyObject *Node_label(NodeObject *self, void *closure) {
-    return PyUnicode_FromString(self->node->getLabel().c_str());
+    return PyUnicode_FromString(self->node->get()->getLabel().c_str());
 }
 
 PyGetSetDef Node_properties[] = {
@@ -32,7 +33,9 @@ PyGetSetDef Node_properties[] = {
 };
 
 PyObject *Node_str(NodeObject *self) {
-    return PyUnicode_FromString(self->node->getLabel().c_str());
+    std::ostringstream oss;
+    oss << self->node->get();
+    return PyUnicode_FromString(oss.str().c_str());
 }
 
 PyTypeObject NodeType = {
