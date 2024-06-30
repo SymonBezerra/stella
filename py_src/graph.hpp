@@ -24,8 +24,6 @@ PyObject* Graph_getEdge(PyObject *self, PyObject *args);
 
 PyObject* Graph_getNode(PyObject *self, PyObject *args);
 
-PyObject* Graph_getAllNodes(PyObject *self, PyObject *args);
-
 extern PyTypeObject GraphType;
 
 #endif
