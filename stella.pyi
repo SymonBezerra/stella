@@ -5,16 +5,16 @@ class Node:
     """
     Class for representing a node in a graph.
 
-    __init__(self, label: str)
+    `__init__(self, label: str)`
         Initialize a Node object with a label.
 
     Attributes
     -------
-    _label (str): string label for the Node object. Readonly via @property.
+    `_label (str)`: string label for the Node object. Readonly via @property.
 
     Methods
     -------
-    __str__(self) -> str
+    `__str__(self) -> str`
         Return a string representation of the Node object (i.e., its label).
     """
 
@@ -32,14 +32,14 @@ class BaseEdge(ABC):
 
     Attributes
     -------
-    _label (str): string label for the BaseEdge object. Readonly via @property.
-    _n1 (Node): first node of the edge. Readonly via @property.
-    _n2 (Node): second node of the edge. Readonly via @property.
-    _weight (int): represents the weight of the edge object. Default to 1. Readonly via @property.
+    `_label (str)`: string label for the BaseEdge object. Readonly via @property.
+    `_n1 (Node)`: first node of the edge. Readonly via @property.
+    `_n2 (Node)`: second node of the edge. Readonly via @property.
+    `_weight (int)`: represents the weight of the edge object. Default to 1. Readonly via @property.
 
     Methods
     -------
-    __str__(self) -> str
+    `__str__(self) -> str`
         Return a string representation of the Node object (i.e., its label).
     """
 
@@ -64,14 +64,14 @@ class Edge(BaseEdge):
 
     Attributes
     -------
-    _label (str): string label for the BaseEdge object. Readonly via @property.
-    _n1 (Node): first node of the edge. Readonly via @property.
-    _n2 (Node): second node of the edge. Readonly via @property.
-    _weight (int): represents the weight of the edge object. Default to 1. Readonly via @property.
+    `_label (str)`: string label for the BaseEdge object. Readonly via @property.
+    `_n1 (Node)`: first node of the edge. Readonly via @property.
+    `_n2 (Node)`: second node of the edge. Readonly via @property.
+    `_weight (int)`: represents the weight of the edge object. Default to 1. Readonly via @property.
 
     Methods
     -------
-    __str__(self) -> str
+    `__str__(self) -> str`
         Return a string representation of the Node object (i.e., its label).
     """
 
@@ -82,14 +82,14 @@ class DirectedEdge(BaseEdge):
 
     Attributes
     -------
-    _label (str): string label for the BaseEdge object. Readonly via @property.
-    _n1 (Node): first node of the edge. Readonly via @property.
-    _n2 (Node): second node of the edge. Readonly via @property.
-    _weight (int): represents the weight of the edge object. Default to 1. Readonly via @property.
+    `_label (str)`: string label for the BaseEdge object. Readonly via @property.
+    `_n1 (Node)`: first node of the edge. Readonly via @property.
+    `_n2 (Node)`: second node of the edge. Readonly via @property.
+    `_weight (int)`: represents the weight of the edge object. Default to 1. Readonly via @property.
 
     Methods
     -------
-    __str__(self) -> str
+    `__str__(self) -> str`
         Return a string representation of the Node object (i.e., its label).
     """
 
@@ -103,19 +103,19 @@ class Graph(ABC):
 
     Attributes
     -------
-    _nodes (list[Node]): contains all the nodes present in the Graph. Readonly via @property.
+    `_nodes (list[Node])`: contains all the nodes present in the Graph. Readonly via @property.
 
     Methods
     -------
-    add_edge(label: str)
+    `add_edge(label: str)`
         Creates a new edge object and adds it to the graph.
-    add_edge(edge: Edge)
+    `add_edge(edge: Edge)`
         Adds an existing edge to the graph.
-    add_node(label: str)
+    `add_node(label: str)`
         Creates a new edge object and adds it to the graph.
-    add_node(node: Node)
+    `add_node(node: Node)`
         Adds an existing node to the graph.
-    get_node(label: str)
+    `get_node(label: str)`
         Retrieves a Node object from the graph.
     """
 
@@ -124,11 +124,9 @@ class Graph(ABC):
         """
         Adds a Node object into the Graph. This method has two possible signatures:
 
-        add_node(arg: str
-        -------
+        `add_node(arg: str)`
             Creates a brand new Node object with `arg` as its label.
-        add_node(arg: Node)
-        -------
+        `add_node(arg: Node)`
             Adds an existing Node object to the graph.
         """
         ...
@@ -138,18 +136,16 @@ class Graph(ABC):
         """
         Adds an Edge object into the graph. This method has two possible signatures:
 
-        add_edge(arg: BaseEdge)
-        -------
+        `add_edge(arg: BaseEdge)`
             Adds an existing BaseEdge object to the graph.
 
-        add_edge(arg: str, n1: str, n2: str, weight: int = 1)
-        -------
+        `add_edge(arg: str, n1: str, n2: str, weight: int = 1)`
             Creates an Edge object with `arg` as its label, then searches for nodes inside
             the graph with `n1` and `n2` as its labels, with default weight 1.
         
         Raises
         -------
-        TypeError: if an Edge object is added to a directed graph,
+        `TypeError`: if an Edge object is added to a directed graph,
         or if an DirectedEdge object is added to a non-directed graph.
         """
         ...
@@ -157,7 +153,7 @@ class Graph(ABC):
     @abstractmethod
     def get_node(self, label: str) -> Union[Node, None]:
         """
-        Returns a node from the graph. If the label is not found, a None value is returned.
+        Returns a node from the graph. If the label is not found, a `None` value is returned.
         """
 
     @property
@@ -166,26 +162,26 @@ class Graph(ABC):
 class AdjList(Graph):
     """
     Class representation of a non-directed adjacency list.
-    Implements a dict[BaseEdge] objects, with its labels as keys, for the edges.
+    Implements a `dict[Edge]` for its Edge objects, with its labels as keys, for the edges.
 
     Attributes
     -------
-    _nodes (list[Node]): contains all the nodes present in the AdjList. Readonly via @property.
-    _nodes (dict[BaseEdge]): contains all the edges present in the AdjList. Readonly via @property.
+    `_nodes (list[Node])`: contains all the nodes present in the AdjList. Readonly via @property.
+    `_edges (dict[Edge])`: contains all the edges present in the AdjList. Readonly via @property.
 
     Methods
     -------
-    add_edge(label: str)
+    `add_edge(label: str)`
         Creates a new edge object and adds it to the graph.
-    add_edge(edge: Edge)
+    `add_edge(edge: Edge)`
         Adds an existing edge to the graph.
-    add_node(label: str)
+    `add_node(label: str)`
         Creates a new edge object and adds it to the graph.
-    add_node(node: Node)
+    `add_node(node: Node)`
         Adds an existing node to the graph.
-    get_node(label: str)
+    `get_node(label: str)`
         Retrieves a Node object from the graph.
-    get_edge(label: str)
+    `get_edge(label: str)`
         Retrieves an Edge object from the graph.
     """
 
@@ -202,10 +198,57 @@ class AdjList(Graph):
         """
 
 class DirectedAdjList(AdjList):
+    """
+    Class representation of a directed adjacency list.
+    Implements a `dict[DirectedEdge]` for its Edge objects, with its labels as keys, for the edges.
+
+    Attributes
+    -------
+    `_nodes (list[Node])`: contains all the nodes present in the AdjList. Readonly via @property.
+    `_edges (dict[DirectedEdge])`: contains all the edges present in the AdjList. Readonly via @property.
+
+    Methods
+    -------
+    `add_edge(label: str)`
+        Creates a new edge object and adds it to the graph.
+    `add_edge(edge: DirectedEdge)`
+        Adds an existing edge to the graph.
+    `add_node(label: str)`
+        Creates a new edge object and adds it to the graph.
+    `add_node(node: Node)`
+        Adds an existing node to the graph.
+    `get_node(label: str)`
+        Retrieves a Node object from the graph.
+    `get_edge(label: str)`
+        Retrieves an DirectedEdge object from the graph.
+    """
     @property
     def get_edge(self, label: str) -> Union[DirectedEdge, None]: ...
 
 class AdjMatrix(Graph):
+    """
+    Class representation of a non-directed adjacency matrix.
+    Implements a non-squared `list[list[Edge]]` for its edge objects.
+
+    Attributes
+    -------
+    `_nodes (list[Node])`: contains all the nodes present in the AdjList. Readonly via @property.
+    `_edges (list[list[Edge]])`: contains all the edges present in the AdjList. Readonly via @property.
+
+    Methods
+    -------
+    `add_edge(label: str)`
+        Creates a new edge object and adds it to the graph.
+    `add_edge(edge: DirectedEdge)`
+        Adds an existing edge to the graph.
+    `add_node(label: str)`
+        Creates a new edge object and adds it to the graph.
+    `add_node(node: Node)`
+        Adds an existing node to the graph.
+    `get_node(label: str)`
+        Retrieves a Node object from the graph.
+    """
+
     @property
     def edges(self) -> list[list[Edge]]:
         """
@@ -220,6 +263,28 @@ class AdjMatrix(Graph):
         """
 
 class DirectedAdjMatrix(AdjMatrix):
+    """
+    Class representation of a non-directed adjacency matrix.
+    Implements a squared `list[list[DirectedEdge]]` for its edge objects.
+
+    Attributes
+    -------
+    `_nodes (list[Node])`: contains all the nodes present in the AdjList. Readonly via @property.
+    `_edges (list[list[DirectedEdge]])`: contains all the edges present in the AdjList. Readonly via @property.
+
+    Methods
+    -------
+    `add_edge(label: str)`
+        Creates a new edge object and adds it to the graph.
+    `add_edge(edge: DirectedEdge)`
+        Adds an existing edge to the graph.
+    `add_node(label: str)`
+        Creates a new edge object and adds it to the graph.
+    `add_node(node: Node)`
+        Adds an existing node to the graph.
+    `get_node(label: str)`
+        Retrieves a Node object from the graph.
+    """
     @property
     def edges(self) -> list[list[DirectedEdge]]:
         """
