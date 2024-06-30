@@ -1,5 +1,4 @@
-from abc import ABC
-from functools import singledispatchmethod
+from abc import ABC, abstractmethod
 from typing import Union
 
 class Node:
@@ -116,14 +115,120 @@ class Graph(ABC):
         Creates a new edge object and adds it to the graph.
     add_node(node: Node)
         Adds an existing node to the graph.
+    get_node(label: str)
+        Retrieves a Node object from the graph.
     """
 
-    def add_node(arg: Union[str, Node]) -> None:
+    @abstractmethod
+    def add_node(self, arg: Union[str, Node]) -> None:
         """
+        Adds a Node object into the Graph. This method has two possible signatures:
+
+        add_node(arg: str
+        -------
+            Creates a brand new Node object with `arg` as its label.
+        add_node(arg: Node)
+        -------
+            Adds an existing Node object to the graph.
+        """
+        ...
+
+    @abstractmethod
+    def add_edge(self, arg: Union[str, BaseEdge], n1: str=None, n2: str=None, weight: int=1) -> None:
+        """
+        Adds an Edge object into the graph. This method has two possible signatures:
+
+        add_edge(arg: BaseEdge)
+        -------
+            Adds an existing BaseEdge object to the graph.
+
+        add_edge(arg: str, n1: str, n2: str, weight: int = 1)
+        -------
+            Creates an Edge object with `arg` as its label, then searches for nodes inside
+            the graph with `n1` and `n2` as its labels, with default weight 1.
         
+        Raises
+        -------
+        TypeError: if an Edge object is added to a directed graph,
+        or if an DirectedEdge object is added to a non-directed graph.
+        """
+        ...
+
+    @abstractmethod
+    def get_node(self, label: str) -> Union[Node, None]:
+        """
+        Returns a node from the graph. If the label is not found, a None value is returned.
         """
 
-    def add_edge(arg: Union[str | Node], n1: str= None, n2: str=None, weight: int = None) -> None: ...
+    @property
+    def nodes(self) -> list[Node]: ...
 
 class AdjList(Graph):
-    pass
+    """
+    Class representation of a non-directed adjacency list.
+    Implements a dict[BaseEdge] objects, with its labels as keys, for the edges.
+
+    Attributes
+    -------
+    _nodes (list[Node]): contains all the nodes present in the AdjList. Readonly via @property.
+    _nodes (dict[BaseEdge]): contains all the edges present in the AdjList. Readonly via @property.
+
+    Methods
+    -------
+    add_edge(label: str)
+        Creates a new edge object and adds it to the graph.
+    add_edge(edge: Edge)
+        Adds an existing edge to the graph.
+    add_node(label: str)
+        Creates a new edge object and adds it to the graph.
+    add_node(node: Node)
+        Adds an existing node to the graph.
+    get_node(label: str)
+        Retrieves a Node object from the graph.
+    get_edge(label: str)
+        Retrieves an Edge object from the graph.
+    """
+
+    @property
+    def edges(self) -> dict[Edge]:
+        """
+        Returns the edges from the AdjList.
+        """
+
+    @property
+    def get_edge(self, label: str) -> Union[Edge, None]:
+        """
+        Retrieves an edge from the graph. If the label is not found, None is returned.
+        """
+
+class DirectedAdjList(AdjList):
+    @property
+    def get_edge(self, label: str) -> Union[DirectedEdge, None]: ...
+
+class AdjMatrix(Graph):
+    @property
+    def edges(self) -> list[list[Edge]]:
+        """
+        Returns the edges matrix from the AdjMatrix.
+        For the non-directed adjacency matrix, this module implements a non-squared 2D list,
+        such as:
+        * * * * *
+        * * * *
+        * * *
+        * *
+        *
+        """
+
+class DirectedAdjMatrix(AdjMatrix):
+    @property
+    def edges(self) -> list[list[DirectedEdge]]:
+        """
+        Returns the edges matrix from the AdjMatrix.
+        For the directed adjacency matrix, this module implements a squared 2D list,
+        such as:
+        * * * * *
+        * * * * *
+        * * * * *
+        * * * * *
+        * * * * *
+        """
