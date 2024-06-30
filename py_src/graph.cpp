@@ -34,18 +34,12 @@ PyObject* Graph_getAllNodes(PyObject *self, PyObject *args) {
     return NULL;
 }
 
-PyObject* Graph_getAllEdges(PyObject *self, PyObject *args) {
-    PyErr_SetString(PyExc_NotImplementedError, "getAllEdges method is abstract and must be implemented in derived classes");
-    return NULL;
-}
-
 PyMethodDef Graph_methods[] = {
     {"addNode", (PyCFunction)Graph_addNode, METH_VARARGS, "Add a node to the graph."},
     {"addEdge", (PyCFunction)Graph_addEdge, METH_VARARGS, "Add an edge to the graph."},
     {"getEdge", (PyCFunction)Graph_getEdge, METH_VARARGS, "Get an edge from the graph."},
     {"getNode", (PyCFunction)Graph_getNode, METH_VARARGS, "Get a node from the graph."},
     {"getAllNodes", (PyCFunction)Graph_getAllNodes, METH_NOARGS, "Get all nodes from the graph."},
-    {"getAllEdges", (PyCFunction)Graph_getAllEdges, METH_NOARGS, "Get all edges from the graph."},
     {NULL, NULL, 0, NULL}
 };
 
