@@ -37,6 +37,6 @@
 #include "graph.tpp"
 #include "adj_list.tpp"
 #include "adj_matrix.tpp"
-
+#include "lua_parser.tpp"
 
 #endif
