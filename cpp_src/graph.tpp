@@ -17,6 +17,8 @@ namespace stella {
     class Graph {
         static_assert(is_base_of<Node, N>::value, "N must be of type stella::Node");
         public:
+            using NodeType = N;
+            using EdgeType = E;
             virtual void addNode(shared_ptr<N> node) = 0;
             virtual void addNode(string label) = 0;
             virtual void addEdge(shared_ptr<E> edge) = 0;
