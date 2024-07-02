@@ -39,7 +39,7 @@ extern PyTypeObject AdjListType;
 
 typedef struct {
     PyObject_HEAD
-    stella::DirectedAdjList<stella::Node, stella::DirectedEdge> *adjlist;
+    unique_ptr<stella::DirectedAdjList<stella::Node, stella::DirectedEdge>> adjlist;
 } DirectedAdjListObject;
 
 PyObject *DirectedAdjList_new(PyTypeObject *type, PyObject *args, PyObject *kwds);

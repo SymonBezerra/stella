@@ -272,7 +272,7 @@ PyObject *DirectedAdjList_new(PyTypeObject *type, PyObject *args, PyObject *kwds
 
 
 int DirectedAdjList_init(DirectedAdjListObject *self, PyObject *args, PyObject *kwds) {
-    self->adjlist = new stella::DirectedAdjList<stella::Node, stella::DirectedEdge>();
+    self->adjlist = make_unique<stella::DirectedAdjList<stella::Node, stella::DirectedEdge>>();
     return 0;
 };
 

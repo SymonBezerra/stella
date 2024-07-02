@@ -38,5 +38,4 @@
 #include "adj_list.tpp"
 #include "adj_matrix.tpp"
 
-
 #endif

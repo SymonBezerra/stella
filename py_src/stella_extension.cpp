@@ -22,6 +22,8 @@ static PyModuleDef stellaModule = {
 PyMODINIT_FUNC
 PyInit_stella(void) {
     PyObject *m;
+
+    // Initialize all types
     if (PyType_Ready(&GraphType) < 0 ||
         PyType_Ready(&NodeType) < 0 ||
         PyType_Ready(&BaseEdgeType) < 0 ||
@@ -29,37 +31,73 @@ PyInit_stella(void) {
         PyType_Ready(&DirectedEdgeType) < 0 ||
         PyType_Ready(&AdjListType) < 0 ||
         PyType_Ready(&DirectedAdjListType) < 0 ||
-        // PyType_Ready(&AdjMatrixType) < 0 ||
-        PyType_Ready(&DirectedAdjMatrixType) < 0)
+        PyType_Ready(&AdjMatrixType) < 0 ||
+        PyType_Ready(&DirectedAdjMatrixType) < 0) {
         return NULL;
+    }
 
+    // Create the stella module
     m = PyModule_Create(&stellaModule);
-    if (m == NULL)
+    if (m == NULL) {
         return NULL;
+    }
 
+    // Add objects to the module and increment their references
     Py_INCREF(&NodeType);
-    PyModule_AddObject(m, "Node", (PyObject *)&NodeType);
+    if (PyModule_AddObject(m, "Node", (PyObject *)&NodeType) < 0) {
+        Py_DECREF(&NodeType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     Py_INCREF(&BaseEdgeType);
-    PyModule_AddObject(m, "BaseEdge", (PyObject *)&BaseEdgeType);
+    if (PyModule_AddObject(m, "BaseEdge", (PyObject *)&BaseEdgeType) < 0) {
+        Py_DECREF(&BaseEdgeType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     Py_INCREF(&EdgeType);
-    PyModule_AddObject(m, "Edge", (PyObject *)&EdgeType);
+    if (PyModule_AddObject(m, "Edge", (PyObject *)&EdgeType) < 0) {
+        Py_DECREF(&EdgeType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     Py_INCREF(&DirectedEdgeType);
-    PyModule_AddObject(m, "DirectedEdge", (PyObject *)&DirectedEdgeType);
+    if (PyModule_AddObject(m, "DirectedEdge", (PyObject *)&DirectedEdgeType) < 0) {
+        Py_DECREF(&DirectedEdgeType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     Py_INCREF(&AdjListType);
-    PyModule_AddObject(m, "AdjList", (PyObject *)&AdjListType);
+    if (PyModule_AddObject(m, "AdjList", (PyObject *)&AdjListType) < 0) {
+        Py_DECREF(&AdjListType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     Py_INCREF(&DirectedAdjListType);
-    PyModule_AddObject(m, "DirectedAdjList", (PyObject *)&DirectedAdjListType);
+    if (PyModule_AddObject(m, "DirectedAdjList", (PyObject *)&DirectedAdjListType) < 0) {
+        Py_DECREF(&DirectedAdjListType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     Py_INCREF(&GraphType);
-    PyModule_AddObject(m, "Graph", (PyObject *)&GraphType);
+    if (PyModule_AddObject(m, "Graph", (PyObject *)&GraphType) < 0) {
+        Py_DECREF(&GraphType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     Py_INCREF(&AdjMatrixType);
-    PyModule_AddObject(m, "AdjMatrix", (PyObject *)&AdjMatrixType);
+    if (PyModule_AddObject(m, "AdjMatrix", (PyObject *)&AdjMatrixType) < 0) {
+        Py_DECREF(&AdjMatrixType);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     Py_INCREF(&DirectedAdjMatrixType);
     if (PyModule_AddObject(m, "DirectedAdjMatrix", (PyObject *)&DirectedAdjMatrixType) < 0) {
@@ -67,7 +105,6 @@ PyInit_stella(void) {
         Py_DECREF(m);
         return NULL;
     }
-
 
     return m;
 }

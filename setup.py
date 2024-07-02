@@ -10,7 +10,7 @@ stella_module = Extension(
         'py_src/edge.cpp',
         'py_src/graph.cpp',
         'py_src/adj_list.cpp',
-        'py_src/adj_matrix.cpp'
+        'py_src/adj_matrix.cpp',
     ],
     include_dirs=[
         '/usr/include/python3.11',
