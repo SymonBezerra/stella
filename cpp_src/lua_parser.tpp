@@ -36,27 +36,25 @@ namespace stella {
             }
             template<typename G>
             void load(const string& filename, G* graph) {
-                // static_assert(is_base_of<Graph<typename G::NodeType, typename G::EdgeType>, G>::value, "G must be derived from stella::Graph");
+                static_assert(is_base_of<Graph<typename G::NodeType, typename G::EdgeType>, G>::value, "G must be derived from stella::Graph");
                 if (luaL_dofile(L, filename.c_str()) != LUA_OK) {
                     throw runtime_error(lua_tostring(L, -1));
                 }
-                // Get nodes from Lua
                 lua_getglobal(L, "nodes");
                 if (lua_istable(L, -1)) {
-                    lua_pushnil(L); // First key
+                    lua_pushnil(L);
                     while (lua_next(L, -2) != 0) {
                         std::string nodeLabel = lua_tostring(L, -1);
                         graph->addNode(nodeLabel);
-                        lua_pop(L, 1); // Remove value, keep key for next iteration
+                        lua_pop(L, 1);
                     }
                 }
                 else throw std::runtime_error("LuaParser syntax error: missing nodes table");
-                lua_pop(L, 1); // Remove nodes table
+                lua_pop(L, 1);
 
-                // Get edges from Lua
                 lua_getglobal(L, "edges");
                 if (lua_istable(L, -1)) {
-                    lua_pushnil(L); // First key
+                    lua_pushnil(L);
                     while (lua_next(L, -2) != 0) {
                         const char* edgeLabel = lua_tostring(L, -2);
                         if (edgeLabel == nullptr) throw runtime_error("Lua parse syntax error, missing edge label");
@@ -80,10 +78,10 @@ namespace stella {
                         lua_pop(L, 1);
 
                         graph->addEdge(edgeLabel, n1, n2, weight);
-                        lua_pop(L, 1); // Remove edge table, keep key for next iteration
+                        lua_pop(L, 1);
                     }
                 } else throw std::runtime_error("LuaParser syntax error: missing edges table");
-                lua_pop(L, 1); // Remove edges table
+                lua_pop(L, 1);
             }
             ~LuaParser() {
                 lua_close(L);
