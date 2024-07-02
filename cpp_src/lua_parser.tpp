@@ -5,6 +5,14 @@
 #include <memory>
 #include <type_traits>
 
+/*
+    TO USE THIS PARSER, READ THIS:
+    You must install a Lua runtime, or download the Lua source and add the header directory
+    manually. For the "official version" of Stella, i.e. this repository, we will keep for now
+    the version 5.4. Future updates can modify the version use.
+
+    For compilation, use only the flag `-llua5.4` (or other version)
+*/
 #include <lua5.4/lua.h>
 #include <lua5.4/lauxlib.h>
 #include <lua5.4/luaconf.h>
