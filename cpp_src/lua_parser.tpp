@@ -26,21 +26,19 @@ using std::make_unique;
 using std::runtime_error;
 
 namespace stella {
-    template<typename G>
     class LuaParser {
-                static_assert(is_base_of<Graph<typename G::NodeType, typename G::EdgeType>, G>::value, "G must be derived from stella::Graph");
         private:
             lua_State* L;
-            unique_ptr<G> graph;
         public:
             LuaParser() {
-                graph = make_unique<G>();
                 L = luaL_newstate();
                 if (L == nullptr) throw runtime_error("LuaParser failed to initialize");
             }
-            void load(const string& filename) {
+            template<typename G>
+            void load(const string& filename, G* graph) {
+                // static_assert(is_base_of<Graph<typename G::NodeType, typename G::EdgeType>, G>::value, "G must be derived from stella::Graph");
                 if (luaL_dofile(L, filename.c_str()) != LUA_OK) {
-                    throw std::runtime_error(lua_tostring(L, -1));
+                    throw runtime_error(lua_tostring(L, -1));
                 }
                 // Get nodes from Lua
                 lua_getglobal(L, "nodes");
@@ -60,16 +58,19 @@ namespace stella {
                 if (lua_istable(L, -1)) {
                     lua_pushnil(L); // First key
                     while (lua_next(L, -2) != 0) {
-                        std::string edgeLabel = lua_tostring(L, -2);
+                        const char* edgeLabel = lua_tostring(L, -2);
+                        if (edgeLabel == nullptr) throw runtime_error("Lua parse syntax error, missing edge label");
 
                         lua_pushstring(L, "n1");
                         lua_gettable(L, -2);
-                        std::string n1 = lua_tostring(L, -1);
+                        const char* n1 = lua_tostring(L, -1);
+                        if (n1 == nullptr) throw runtime_error("Lua parse syntax error, missing n1 label");
                         lua_pop(L, 1);
 
                         lua_pushstring(L, "n2");
                         lua_gettable(L, -2);
-                        std::string n2 = lua_tostring(L, -1);
+                        const char* n2 = lua_tostring(L, -1);
+                        if (n2 == nullptr) throw runtime_error("Lua parse syntax error, missing n1 label");
                         lua_pop(L, 1);
 
                         lua_pushstring(L, "weight");
@@ -83,9 +84,6 @@ namespace stella {
                     }
                 } else throw std::runtime_error("LuaParser syntax error: missing edges table");
                 lua_pop(L, 1); // Remove edges table
-            }
-            unique_ptr<G>& getGraph() {
-                return graph;
             }
             ~LuaParser() {
                 lua_close(L);

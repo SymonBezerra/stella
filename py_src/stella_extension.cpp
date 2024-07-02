@@ -9,6 +9,7 @@
 #include "graph.hpp"
 #include "adj_list.hpp"
 #include "adj_matrix.hpp"
+#include "lua_parser.hpp"
 
 static PyModuleDef stellaModule = {
     PyModuleDef_HEAD_INIT,
@@ -68,6 +69,8 @@ PyInit_stella(void) {
         return NULL;
     }
 
+    Py_INCREF(&LuaParserType);
+    PyModule_AddObject(m, "LuaParser", (PyObject *)&LuaParserType);
 
     return m;
 }
