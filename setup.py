@@ -11,17 +11,14 @@ stella_module = Extension(
         'py_src/graph.cpp',
         'py_src/adj_list.cpp',
         'py_src/adj_matrix.cpp',
-        'py_src/lua_parser.cpp'
     ],
     include_dirs=[
         '/usr/include/python3.11',
         'py_src',
-        'cpp_src',
-        '/usr/include/lua5.4'
+        'cpp_src'
     ],
-    libraries=['lua5.4'],
     language='c++',
-    extra_compile_args=['-std=c++14', '-llua5.4'],
+    extra_compile_args=['-std=c++14'],
 )
 
 setup(

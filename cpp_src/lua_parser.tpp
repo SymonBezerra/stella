@@ -11,14 +11,13 @@
     manually. For the "official version" of Stella, i.e. this repository, we will keep for now
     the version 5.4. Future updates can modify the version use.
 
-    For compilation, use only the flag `-llua5.4` (or other version)
+    For compilation, use only the flag `-llua5.4` (or other version). It will be kept
+    outside of the main header (`stella.hpp`) file, so as to ensure independent use.
 */
 #include <lua5.4/lua.h>
 #include <lua5.4/lauxlib.h>
 #include <lua5.4/luaconf.h>
-#include "node.hpp"
-#include "edge.hpp"
-#include "graph.tpp"
+#include "stella.hpp"
 
 using std::is_base_of;
 using std::unique_ptr;
