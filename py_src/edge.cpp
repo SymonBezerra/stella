@@ -21,6 +21,13 @@ int BaseEdge_init(BaseEdgeObject *self, PyObject *args, PyObject *kwds) {
     if (!PyArg_ParseTuple(args, "sOO|i", &label, &n1_obj, &n2_obj, &weight)) {
         return -1;
     }
+    if (
+        !PyObject_IsInstance((PyObject *)n1_obj, (PyObject *) &NodeType)
+        || !PyObject_IsInstance((PyObject *)n2_obj, (PyObject *) &NodeType)
+    ) {
+        PyErr_SetString(PyExc_TypeError, "n1 and n2 must be of Node type");
+        return -1;
+    }
     shared_ptr<stella::Node>* n1 = n1_obj->node;
     shared_ptr<stella::Node>* n2 = n2_obj->node;
     self->edge = new (shared_ptr<stella::BaseEdge>) (make_shared<stella::BaseEdge>(label, *n1, *n2, weight));
