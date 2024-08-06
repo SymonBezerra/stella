@@ -38,6 +38,32 @@ PyObject *Node_str(NodeObject *self) {
     return PyUnicode_FromString(oss.str().c_str());
 }
 
+PyObject *Node_richcompare(PyObject* first, PyObject* second, int op) {
+    if (
+        !PyObject_IsInstance(first, (PyObject *)&NodeType)
+        || !PyObject_IsInstance(second, (PyObject *)&NodeType)
+    )
+        Py_RETURN_NOTIMPLEMENTED;
+
+    bool result = false;
+    switch (op) {
+        case Py_EQ:
+            result = *(((NodeObject *)first)->node) == *(((NodeObject *)second)->node) ;
+            break;
+        case Py_NE:
+            result = *(((NodeObject *)first)->node)  != *(((NodeObject *)second)->node) ;
+            break;
+        default:
+            Py_RETURN_NOTIMPLEMENTED;
+    }
+
+    if (result) {
+        Py_RETURN_TRUE;
+    } else {
+        Py_RETURN_FALSE;
+    }
+}
+
 PyTypeObject NodeType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "stella.Node",             /* tp_name */
@@ -62,7 +88,7 @@ PyTypeObject NodeType = {
     "Node object",             /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    Node_richcompare,          /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */

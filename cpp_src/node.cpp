@@ -11,4 +11,12 @@ namespace stella {
         os << obj->label;
         return os;
     }
+
+    bool operator==(Node& first, Node& second) {
+        return first.label == second.label;
+    }
+
+    bool operator!=(Node& first, Node& second) {
+        return first.label != second.label;
+    }
 }

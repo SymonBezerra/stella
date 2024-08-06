@@ -14,6 +14,8 @@ namespace stella {
         Node(string label);
         string getLabel() const;
         friend std::ostream& operator<<(std::ostream& os, Node* obj);
+        friend bool operator==(Node& first, Node& second);
+        friend bool operator!=(Node& first, Node& second);
     };
 }
 
