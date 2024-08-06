@@ -48,20 +48,17 @@ PyObject *Node_richcompare(PyObject* first, PyObject* second, int op) {
     bool result = false;
     switch (op) {
         case Py_EQ:
-            result = *(((NodeObject *)first)->node) == *(((NodeObject *)second)->node) ;
+            result = *(((NodeObject *)first)->node) == *(((NodeObject *)second)->node);
             break;
         case Py_NE:
-            result = *(((NodeObject *)first)->node)  != *(((NodeObject *)second)->node) ;
+            result = *(((NodeObject *)first)->node)  != *(((NodeObject *)second)->node);
             break;
         default:
             Py_RETURN_NOTIMPLEMENTED;
     }
 
-    if (result) {
-        Py_RETURN_TRUE;
-    } else {
-        Py_RETURN_FALSE;
-    }
+    if (result) Py_RETURN_TRUE;
+    Py_RETURN_FALSE;
 }
 
 PyTypeObject NodeType = {
