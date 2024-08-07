@@ -220,6 +220,29 @@ PyMethodDef AdjList_methods[] = {
     {NULL, NULL, 0, NULL}
 };
 
+PyObject *AdjList_richcompare(PyObject *first, PyObject *second, int op) {
+    if (!PyObject_IsInstance(first, (PyObject *)&AdjListType)
+    || !PyObject_IsInstance(second, (PyObject *)&AdjListType))
+        Py_RETURN_NOTIMPLEMENTED;
+
+    auto adjList1 = *(((AdjListObject *)first)->adjlist);
+    auto adjList2 = *(((AdjListObject *)second)->adjlist);
+
+    bool result = false;
+    switch (op) {
+        case Py_EQ:
+            result = adjList1 == adjList2;
+            break;
+        case Py_NE:
+            result = adjList1 != adjList2;
+            break;
+        default:
+            Py_RETURN_NOTIMPLEMENTED;
+    }
+    if (result) Py_RETURN_TRUE;
+    Py_RETURN_FALSE;
+}
+ 
 PyTypeObject AdjListType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "stella.AdjList",          /* tp_name */
@@ -244,7 +267,7 @@ PyTypeObject AdjListType = {
     "AdjList object",          /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    AdjList_richcompare,       /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
@@ -388,6 +411,29 @@ PyGetSetDef DirectedAdjList_GetSetDef[] = {
     {NULL}
 };
 
+PyObject *DirectedAdjList_richcompare(PyObject *first, PyObject *second, int op) {
+    if (!PyObject_IsInstance(first, (PyObject *)&AdjListType)
+    || !PyObject_IsInstance(second, (PyObject *)&AdjListType))
+        Py_RETURN_NOTIMPLEMENTED;
+
+    auto adjList1 = *(((DirectedAdjListObject *)first)->adjlist);
+    auto adjList2 = *(((DirectedAdjListObject *)second)->adjlist);
+
+    bool result = false;
+    switch (op) {
+        case Py_EQ:
+            result = adjList1 == adjList2;
+            break;
+        case Py_NE:
+            result = adjList1 != adjList2;
+            break;
+        default:
+            Py_RETURN_NOTIMPLEMENTED;
+    }
+    if (result) Py_RETURN_TRUE;
+    Py_RETURN_FALSE;
+}
+
 PyTypeObject DirectedAdjListType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "stella.DirectedAdjList",          /* tp_name */
@@ -412,7 +458,7 @@ PyTypeObject DirectedAdjListType = {
     "DirectedAdjList object",  /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    DirectedAdjList_richcompare,/* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
