@@ -15,7 +15,7 @@ using std::shared_ptr;
 namespace stella {
 
     template<typename N, typename E>
-    class AdjMatrix {
+    class AdjMatrix: public Graph<N, E> {
         static_assert(is_base_of<Edge, E>::value, "E must be of type stella::Edge for non-directed graphs");
     protected:
         void pushNode(int size) {
@@ -69,6 +69,7 @@ namespace stella {
             if (node1 < 0 || node2 < 0)
                 throw invalid_argument("Node labels not found: " + n1 + " " + n2);
             shared_ptr<E> edge = make_shared<E>(label, nodes[node1], nodes[node2], weight);
+            std::cout << node1 << " " << node2 << std::endl;
             if (node2 > node1) edges[node1][node2].insert({edge->getLabel(), edge});
             else if (node2 == node1) edges[node1][0].insert({edge->getLabel(), edge});
             else edges[node2][node1].insert({edge->getLabel(), edge});
@@ -94,6 +95,36 @@ namespace stella {
             }
             std::vector<std::vector<std::map<string, shared_ptr<E>>>>& getAllEdges() {
                 return edges;
+            }
+            friend bool operator==(AdjMatrix<N,E>& first, AdjMatrix<N,E>& second) {
+                if (first.nodes.size() != second.nodes.size()) return false;
+                for (int i = 0; i < first.nodes.size(); i++) {
+                    bool node_present = false;
+                    for (int j = 0; j < second.nodes.size(); j++) {
+                        if (*(first.nodes[i]) == *(second.nodes[j])) {
+                            node_present = true;
+                            break;
+                        };
+                    }
+                    if (!node_present) return false;
+                }
+                // int size = first.nodes.size();
+                // int dec = 0;
+                // for (int i = 0; i < size; i++, dec++) {
+                //     for (int j = 0; j < size - dec; j++) {
+                //         map<string, shared_ptr<E>>& firstEdgeMap = first.edges[i][j];
+                //         map<string, shared_ptr<E>>& secondEdgeMap = second.edges[i][j];
+                //         if (firstEdgeMap.size() != secondEdgeMap.size()) return false;
+                //         for (const auto& firstPair : firstEdgeMap) {
+                //             auto secondPair = secondEdgeMap.find(firstPair.first);
+
+                //             if (secondPair == secondEdgeMap.end()) return false;
+
+                //             if (*(firstPair.second) != *(secondPair->second)) return false;
+                //         }
+                //     }
+                // }
+                return true;
             }
             // ~AdjMatrix() {
             //     int size = nodes.size();
