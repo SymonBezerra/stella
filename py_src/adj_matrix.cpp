@@ -148,7 +148,7 @@ PyObject* AdjMatrix_getAllNodes(AdjMatrixObject* self, PyObject* args) {
 }
 
 PyObject* AdjMatrix_getAllEdges(AdjMatrixObject* self, PyObject* args) {
-    std::vector<std::vector<std::map<std::string, shared_ptr<stella::Edge>>>>& edges = self->adjmatrix->getAllEdges();
+    auto& edges = self->adjmatrix->getAllEdges();
 
     PyObject* pyEdges = PyList_New(edges.size());
     if (!pyEdges) {
@@ -371,7 +371,7 @@ PyObject* DirectedAdjMatrix_addEdge(DirectedAdjMatrixObject* self, PyObject* arg
 }
 
 PyObject* DirectedAdjMatrix_getAllEdges(DirectedAdjMatrixObject* self, PyObject* args) {
-    std::vector<std::vector<std::map<std::string, shared_ptr<stella::DirectedEdge>>>>& edges = self->adjmatrix->getAllEdges();
+    auto& edges = self->adjmatrix->getAllEdges();
 
     PyObject* pyEdges = PyList_New(edges.size());
     if (!pyEdges) {

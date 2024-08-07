@@ -93,7 +93,7 @@ namespace stella {
         vector<std::shared_ptr<N>>& getAllNodes() override {
             return nodes;
         }
-        vector<std::map<string, shared_ptr<E>>>& getAllEdges() {
+        vector<vector<std::map<string, shared_ptr<E>>>>& getAllEdges() {
             return edges;
         }
         friend bool operator==(AdjMatrix<N,E>& first, AdjMatrix<N,E>& second) {
@@ -136,14 +136,14 @@ namespace stella {
             if (this->getNode(node->getLabel()))
                 throw invalid_argument("Node already exists: " + node->getLabel());
             this->nodes.push_back(node);
-            pushNode(this->nodes.size());
+            this->pushNode(this->nodes.size());
         }
         void addNode(std::string label) {
             if (this->getNode(label))
                 throw invalid_argument("Node already exists: " + label);
             shared_ptr<N> node = make_shared<N>(label);
             this->nodes.push_back(node);
-            pushNode(this->nodes.size());
+            this->pushNode(this->nodes.size());
         }
         void addEdge(shared_ptr<E> edge) {
             int n1 = this->getNodeIndex(edge->getN1()->getLabel());
@@ -170,7 +170,7 @@ namespace stella {
             shared_ptr<E> edge = make_shared<E>(label, this->nodes[node1], this->nodes[node2], weight);
             this->edges[node1][node2].insert({edge->getLabel(), edge});
         }
-        friend bool operator==(AdjMatrix<N,E>& first, AdjMatrix<N,E>& second) {
+        friend bool operator==(DirectedAdjMatrix<N,E>& first, DirectedAdjMatrix<N,E>& second) {
             if (first.nodes.size() != second.nodes.size()) return false;
             for (int i = 0; i < first.nodes.size(); i++) {
                 bool node_present = false;
