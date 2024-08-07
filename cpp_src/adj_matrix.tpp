@@ -15,7 +15,7 @@ using std::shared_ptr;
 namespace stella {
 
     template<typename N, typename E>
-    class AdjMatrix {
+    class AdjMatrix : public Graph<N, E> {
         static_assert(is_base_of<Edge, E>::value, "E must be of type stella::Edge for non-directed graphs");
     protected:
         void pushNode(int size) {
