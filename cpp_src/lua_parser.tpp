@@ -6,13 +6,25 @@
 #include <type_traits>
 
 /*
-    TO USE THIS PARSER, READ THIS:
-    You must install a Lua runtime, or download the Lua source and add the header directory
-    manually. For the "official version" of Stella, i.e. this repository, we will keep for now
-    the version 5.4. Future updates can modify the version use.
+    To ensure compatibility, this header will be kept separate
+    from the main `stella.hpp` header file.
 
-    For compilation, use only the flag `-llua5.4` (or other version). It will be kept
-    outside of the main header (`stella.hpp`) file, so as to ensure independent use.
+    TO USE THIS PARSER, READ THIS:
+    You must download Lua source from its official website (https://www.lua.org/download.html),
+    extract it and run its `make` script. Thus, it will create a shared object (.a, .so or .dll)
+    of the entire Lua library (which is less than 600KB), which you can use as a linked library
+    at compilation.
+
+    If you download e.g. Lua 5.4.7 and run its `make` script, the shared object will be created
+    inside the `lua-5.4.7/src`file.
+
+    For example, let's say your Lua source (and shared object) are at `~/Documents/lua`.
+    At compilation, use:
+
+    `g++ main.cpp cpp_src/*.cpp -L~/Documents/lua-5.4.7/src -llua -o main.out`,
+
+    with `-L~/Documents/lua-5.4.7./src` being the directory for your shared object
+    and `-llua` the flag with the library name.
 */
 #include <lua5.4/lua.h>
 #include <lua5.4/lauxlib.h>
