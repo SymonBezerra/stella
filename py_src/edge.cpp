@@ -90,7 +90,6 @@ PyObject *BaseEdge_richcompare(PyObject* first, PyObject* second, int op) {
         default:
             Py_RETURN_NOTIMPLEMENTED;
     }
-    std::cout << result << std::endl;
     if (result) Py_RETURN_TRUE;
     Py_RETURN_FALSE;
 }
