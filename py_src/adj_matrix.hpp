@@ -34,6 +34,8 @@ PyObject* AdjMatrix_getAllNodes(AdjMatrixObject* self, PyObject* args);
 
 PyObject* AdjMatrix_getAllEdges(AdjMatrixObject* self, PyObject* args);
 
+PyObject* AdjMatrix_richcompare(PyObject* first, PyObject* second, int op);
+
 extern PyTypeObject AdjMatrixType;
 
 typedef struct {
@@ -50,6 +52,8 @@ PyObject* DirectedAdjMatrix_addNode(DirectedAdjMatrixObject* self, PyObject* arg
 PyObject* DirectedAdjMatrix_addEdge(DirectedAdjMatrixObject* self, PyObject* args);
 
 PyObject* DirectedAdjMatrix_getAllEdges(DirectedAdjMatrixObject* self, PyObject* args);
+
+PyObject* DirectedAdjMatrix_richcompare(PyObject* first, PyObject* second, int op);
 
 extern PyTypeObject DirectedAdjMatrixType;
 
