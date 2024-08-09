@@ -71,6 +71,41 @@ PyGetSetDef BaseEdge_GetSet[] = {
     {NULL}
 };
 
+PyObject *BaseEdge_richcompare(PyObject* first, PyObject* second, int op) {
+    if (!PyObject_IsInstance(first, (PyObject *)&BaseEdgeType)
+    || !PyObject_IsInstance(second, (PyObject *)&BaseEdgeType))
+        Py_RETURN_NOTIMPLEMENTED;
+
+    stella::BaseEdge e1 = *(((BaseEdgeObject *)first)->edge->get());
+    stella::BaseEdge e2 = *(((BaseEdgeObject *)second)->edge->get());
+
+    bool result = false;
+    switch (op) {
+        case Py_EQ:
+            result = e1 == e2;
+            break;
+        case Py_NE:
+            result = e1 != e2;
+            break;
+        case Py_GT:
+            result = e1 > e2;
+            break;
+        case Py_GE:
+            result = e1 >= e2;
+            break;
+        case Py_LT:
+            result = e1 < e2;
+            break;
+        case Py_LE:
+            result = e1 <= e2;
+            break;
+        default:
+            Py_RETURN_NOTIMPLEMENTED;
+    }
+    if (result) Py_RETURN_TRUE;
+    Py_RETURN_FALSE;
+}
+
 PyTypeObject BaseEdgeType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "stella.BaseEdge",         /* tp_name */
@@ -95,7 +130,7 @@ PyTypeObject BaseEdgeType = {
     "BaseEdge object",         /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    BaseEdge_richcompare,      /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
@@ -159,6 +194,42 @@ PyObject *DirectedEdge_str(DirectedEdgeObject *self) {
     return PyUnicode_FromString(oss.str().c_str());
 }
 
+PyObject *DirectedEdge_richcompare(PyObject* first, PyObject* second, int op) {
+    if (!PyObject_IsInstance(first, (PyObject *)&DirectedEdgeType)
+    || !PyObject_IsInstance(second, (PyObject *)&DirectedEdgeType))
+        Py_RETURN_NOTIMPLEMENTED;
+
+    bool result = false;
+
+    stella::DirectedEdge e1 = *(((DirectedEdgeObject *)first)->edge->get());
+    stella::DirectedEdge e2 = *(((DirectedEdgeObject *)second)->edge->get());
+
+    switch (op) {
+        case Py_EQ:
+            result = e1 == e2;
+            break;
+        case Py_NE:
+            result = e1 != e2;
+            break;
+        case Py_GT:
+            result = e1 > e2;
+            break;
+        case Py_GE:
+            result = e1 >= e2;
+            break;
+        case Py_LT:
+            result = e1 < e2;
+            break;
+        case Py_LE:
+            result = e1 <= e2;
+            break;
+        default:
+            Py_RETURN_NOTIMPLEMENTED;
+    }
+    if (result) Py_RETURN_TRUE;
+    Py_RETURN_FALSE;
+}
+
 PyTypeObject DirectedEdgeType = {
     PyVarObject_HEAD_INIT(NULL, 0)
     "stella.DirectedEdge",     /* tp_name */
@@ -183,7 +254,7 @@ PyTypeObject DirectedEdgeType = {
     "DirectedEdge object",     /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    DirectedEdge_richcompare,  /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */

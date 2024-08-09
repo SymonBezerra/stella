@@ -73,6 +73,32 @@ namespace stella {
             std::map<string, shared_ptr<E>>& getAllEdges() {
                 return edges;
             }
+            friend bool operator==(AdjList<N,E>& first, AdjList<N, E>& second) {
+                if (first.nodes.size() != second.nodes.size()) return false;
+                for (int i = 0; i < first.nodes.size(); i++) {
+                    bool node_present = false;
+                    for (int j = 0; j < second.nodes.size(); j++) {
+                        if (*(first.nodes[i]) == *(second.nodes[j])) {
+                            node_present = true;
+                            break;
+                        };
+                    }
+                    if (!node_present) return false;
+                }
+
+                if (first.edges.size() != second.edges.size()) return false;
+                for (const auto& firstPair : first.edges) {
+                    auto secondPair = second.edges.find(firstPair.first);
+
+                    if (secondPair == second.edges.end()) return false;
+
+                    if (*(firstPair.second) != *(secondPair->second)) return false;
+                }
+                return true;
+            }
+            friend bool operator!=(AdjList<N,E>& first, AdjList<N, E>& second) {
+                return !(first == second);
+            }
             // ~AdjList() {
             //     for (auto pair : edges)
             //         delete pair.second;

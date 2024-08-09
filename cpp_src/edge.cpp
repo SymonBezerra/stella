@@ -29,6 +29,33 @@ namespace stella {
         return os;
     }
 
+    bool operator==(const BaseEdge& first, const BaseEdge& second) {
+        return (first.n1->getLabel() == second.n1->getLabel()
+            || first.n1->getLabel() == second.n2->getLabel())
+        && (first.n2->getLabel() == second.n2->getLabel()
+            || first.n2->getLabel() == second.n1->getLabel());
+    }
+
+    bool operator!=(const BaseEdge& first, const BaseEdge& second) {
+        return !(first == second);
+    }
+
+    bool operator>(const BaseEdge& first, const BaseEdge& second) {
+        return first.weight > second.weight;
+    }
+
+    bool operator>=(const BaseEdge& first, const BaseEdge& second) {
+        return first.weight >= second.weight;
+    }
+
+    bool operator<(const BaseEdge& first, const BaseEdge& second) {
+        return first.weight < second.weight;
+    }
+
+    bool operator<=(const BaseEdge& first, const BaseEdge& second) {
+        return first.weight <= second.weight;
+    }
+
     Edge::Edge(string label, shared_ptr<Node> n1, shared_ptr<Node> n2, int weight)
         : BaseEdge(label, n1, n2, weight) {}
 
@@ -45,5 +72,14 @@ namespace stella {
         os << object->label << ": " << object->n1->getLabel() << "->"
            << object->n2->getLabel() << "(" << object->weight << ")";
         return os;
+    }
+
+    bool operator==(const DirectedEdge& first, const DirectedEdge& second) {
+        return first.n1->getLabel() == second.n1->getLabel()
+        && first.n2->getLabel() == second.n2->getLabel();
+    }
+
+    bool operator!=(const DirectedEdge& first, const DirectedEdge& second) {
+        return !(first == second);
     }
 }

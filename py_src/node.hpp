@@ -16,10 +16,16 @@ typedef struct {
 } NodeObject;
 
 void Node_dealloc(NodeObject *self);
+
 PyObject *Node_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
+
 int Node_init(NodeObject *self, PyObject *args, PyObject *kwds);
+
 PyObject *Node_label(NodeObject *self, void *closure);
+
 PyObject *Node_str(NodeObject *self);
+
+PyObject *Node_richcompare(PyObject* first, PyObject* second, int op);
 
 extern PyTypeObject NodeType;
 

@@ -35,6 +35,8 @@ PyObject* AdjList_getAllNodes(AdjListObject* self, PyObject* args);
 
 PyObject* AdjList_getAllEdges(AdjListObject* self, PyObject* args);
 
+PyObject* AdjList_richcompare(PyObject* first, PyObject* second, int op);
+
 extern PyTypeObject AdjListType;
 
 typedef struct {
@@ -51,6 +53,8 @@ PyObject* DirectedAdjList_addEdge(DirectedAdjListObject* self, PyObject* args);
 PyObject* DirectedAdjList_getEdge(DirectedAdjListObject* self, PyObject* args);
 
 PyObject* DirectedAdjList_getAllEdges(DirectedAdjListObject* self, PyObject* args);;
+
+PyObject* DirectedAdjList_richcompare(PyObject* first, PyObject* second, int op);
 
 extern PyTypeObject DirectedAdjListType;
 

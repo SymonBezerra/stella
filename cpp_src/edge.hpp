@@ -28,6 +28,12 @@ namespace stella {
         int getWeight() const;
 
         friend ostream& operator<<(ostream& os, BaseEdge* object);
+        friend bool operator==(const BaseEdge& first, const BaseEdge& second);
+        friend bool operator!=(const BaseEdge& first, const BaseEdge& second);
+        friend bool operator>(const BaseEdge& first, const BaseEdge& second);
+        friend bool operator>=(const BaseEdge& first, const BaseEdge& second);
+        friend bool operator<(const BaseEdge& first, const BaseEdge& second);
+        friend bool operator<=(const BaseEdge& first, const BaseEdge& second);
     };
 
     class Edge: public BaseEdge {
@@ -41,6 +47,8 @@ namespace stella {
         DirectedEdge(string label, shared_ptr<Node> n1, shared_ptr<Node> n2, int weight);
         DirectedEdge(string label, shared_ptr<Node> n1, shared_ptr<Node> n2);
         friend std::ostream& operator<<(std::ostream& os, DirectedEdge* object);
+        friend bool operator==(const DirectedEdge& first, const DirectedEdge& second);
+        friend bool operator!=(const DirectedEdge& first, const DirectedEdge& second);
     };
 }
 
