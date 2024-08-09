@@ -224,6 +224,29 @@ PyObject* AdjMatrix_getAllEdges(AdjMatrixObject* self, PyObject* args) {
     return pyEdges;
 }
 
+PyObject* AdjMatrix_richcompare(PyObject* first, PyObject* second, int op) {
+    if (!PyObject_IsInstance(first, (PyObject *)&AdjMatrixType)
+    || !PyObject_IsInstance(second, (PyObject *)&AdjMatrixType))
+        Py_RETURN_NOTIMPLEMENTED;
+
+    auto adjMatrix1 = *(((AdjMatrixObject *)first)->adjmatrix);
+    auto adjMatrix2 = *(((AdjMatrixObject *)second)->adjmatrix);
+
+    bool result = false;
+    switch (op) {
+        case Py_EQ:
+            result = adjMatrix1 == adjMatrix2;
+            break;
+        case Py_NE:
+            result = adjMatrix1 != adjMatrix2;
+            break;
+        default:
+            Py_RETURN_NOTIMPLEMENTED;
+    }
+    if (result) Py_RETURN_TRUE;
+    Py_RETURN_FALSE;
+}
+
 PyGetSetDef AdjMatrix_GetSetDef[] = {
     {"edges", (getter)AdjMatrix_getAllEdges, NULL, "Node label", NULL},
     {"nodes", (getter)AdjMatrix_getAllNodes, NULL, "Node label", NULL},
@@ -262,7 +285,7 @@ PyTypeObject AdjMatrixType = {
     "AdjMatrix object",          /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    AdjMatrix_richcompare,     /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
@@ -447,6 +470,29 @@ PyObject* DirectedAdjMatrix_getAllEdges(DirectedAdjMatrixObject* self, PyObject*
     return pyEdges;
 }
 
+PyObject* DirectedAdjMatrix_richcompare(PyObject* first, PyObject* second, int op) {
+    if (!PyObject_IsInstance(first, (PyObject *)&DirectedAdjMatrixType)
+    || !PyObject_IsInstance(second, (PyObject *)&DirectedAdjMatrixType))
+        Py_RETURN_NOTIMPLEMENTED;
+
+    auto adjMatrix1 = *(((DirectedAdjMatrixObject *)first)->adjmatrix);
+    auto adjMatrix2 = *(((DirectedAdjMatrixObject *)second)->adjmatrix);
+
+    bool result = false;
+    switch (op) {
+        case Py_EQ:
+            result = adjMatrix1 == adjMatrix2;
+            break;
+        case Py_NE:
+            result = adjMatrix1 != adjMatrix2;
+            break;
+        default:
+            Py_RETURN_NOTIMPLEMENTED;
+    }
+    if (result) Py_RETURN_TRUE;
+    Py_RETURN_FALSE;
+}
+
 PyGetSetDef DirectedAdjMatrix_GetSetDef[] = {
     {"edges", (getter)DirectedAdjMatrix_getAllEdges, NULL, "Node label", NULL},
     {NULL, NULL}
@@ -482,7 +528,7 @@ PyTypeObject DirectedAdjMatrixType = {
     "DirectedAdjMatrix object",  /* tp_doc */
     0,                         /* tp_traverse */
     0,                         /* tp_clear */
-    0,                         /* tp_richcompare */
+    DirectedAdjMatrix_richcompare,  /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
