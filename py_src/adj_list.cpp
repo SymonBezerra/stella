@@ -412,8 +412,8 @@ PyGetSetDef DirectedAdjList_GetSetDef[] = {
 };
 
 PyObject *DirectedAdjList_richcompare(PyObject *first, PyObject *second, int op) {
-    if (!PyObject_IsInstance(first, (PyObject *)&AdjListType)
-    || !PyObject_IsInstance(second, (PyObject *)&AdjListType))
+    if (!PyObject_IsInstance(first, (PyObject *)&DirectedAdjListType)
+    || !PyObject_IsInstance(second, (PyObject *)&DirectedAdjListType))
         Py_RETURN_NOTIMPLEMENTED;
 
     auto adjList1 = *(((DirectedAdjListObject *)first)->adjlist);
