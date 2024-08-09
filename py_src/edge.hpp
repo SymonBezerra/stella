@@ -32,6 +32,8 @@ PyObject *BaseEdge_n2(BaseEdgeObject *self);
 
 PyObject *BaseEdge_weight(BaseEdgeObject* self);
 
+PyObject *BaseEdge_richcompare(PyObject* first, PyObject* second, int op);
+
 extern PyTypeObject BaseEdgeType;
 
 typedef struct {
@@ -49,6 +51,8 @@ typedef struct {
 } DirectedEdgeObject;
 
 PyObject *DirectedEdge_str(DirectedEdgeObject *self);
+
+PyObject *DirectedEdge_richcompare(PyObject* first, PyObject* second, int op);
 
 extern PyTypeObject DirectedEdgeType;
 

@@ -87,6 +87,18 @@ PyObject *BaseEdge_richcompare(PyObject* first, PyObject* second, int op) {
         case Py_NE:
             result = e1 != e2;
             break;
+        case Py_GT:
+            result = e1 > e2;
+            break;
+        case Py_GE:
+            result = e1 >= e2;
+            break;
+        case Py_LT:
+            result = e1 < e2;
+            break;
+        case Py_LE:
+            result = e1 <= e2;
+            break;
         default:
             Py_RETURN_NOTIMPLEMENTED;
     }
@@ -198,6 +210,18 @@ PyObject *DirectedEdge_richcompare(PyObject* first, PyObject* second, int op) {
             break;
         case Py_NE:
             result = e1 != e2;
+            break;
+        case Py_GT:
+            result = e1 > e2;
+            break;
+        case Py_GE:
+            result = e1 >= e2;
+            break;
+        case Py_LT:
+            result = e1 < e2;
+            break;
+        case Py_LE:
+            result = e1 <= e2;
             break;
         default:
             Py_RETURN_NOTIMPLEMENTED;
