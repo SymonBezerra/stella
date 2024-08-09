@@ -30,6 +30,10 @@ namespace stella {
         friend ostream& operator<<(ostream& os, BaseEdge* object);
         friend bool operator==(const BaseEdge& first, const BaseEdge& second);
         friend bool operator!=(const BaseEdge& first, const BaseEdge& second);
+        friend bool operator>(const BaseEdge& first, const BaseEdge& second);
+        friend bool operator>=(const BaseEdge& first, const BaseEdge& second);
+        friend bool operator<(const BaseEdge& first, const BaseEdge& second);
+        friend bool operator<=(const BaseEdge& first, const BaseEdge& second);
     };
 
     class Edge: public BaseEdge {

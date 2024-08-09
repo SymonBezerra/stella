@@ -40,6 +40,22 @@ namespace stella {
         return !(first == second);
     }
 
+    bool operator>(const BaseEdge& first, const BaseEdge& second) {
+        return first.weight > second.weight;
+    }
+
+    bool operator>=(const BaseEdge& first, const BaseEdge& second) {
+        return first.weight >= second.weight;
+    }
+
+    bool operator<(const BaseEdge& first, const BaseEdge& second) {
+        return first.weight < second.weight;
+    }
+
+    bool operator<=(const BaseEdge& first, const BaseEdge& second) {
+        return first.weight <= second.weight;
+    }
+
     Edge::Edge(string label, shared_ptr<Node> n1, shared_ptr<Node> n2, int weight)
         : BaseEdge(label, n1, n2, weight) {}
 
