@@ -125,6 +125,9 @@ namespace stella {
             }
             return true;
         }
+        friend bool operator!=(AdjMatrix<N,E>& frist, AdjMatrix<N,E>& second) {
+            return !(first == second);
+        }
     };
 
     template<typename N, typename E>
