@@ -1,5 +1,5 @@
 #define PY_SSIZE_T_CLEAN
-#include <python3.11/Python.h>
+#include <Python.h>
 #include <exception>
 #include <sstream>
 #include "../cpp_src/stella.hpp"

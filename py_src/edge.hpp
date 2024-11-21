@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <sstream>
-#include <python3.11/Python.h>
+#include <Python.h>
 
 #include "../cpp_src/stella.hpp"
 #include "node.hpp"
