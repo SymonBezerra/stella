@@ -99,14 +99,6 @@ namespace stella {
             friend bool operator!=(AdjList<N,E>& first, AdjList<N, E>& second) {
                 return !(first == second);
             }
-            // ~AdjList() {
-            //     for (auto pair : edges)
-            //         delete pair.second;
-            //     for (int i = 0; i < nodes.size(); i++)
-            //         delete nodes[i];
-            //     nodes.clear();
-            //     edges.clear();
-            // }
     };
 
     template<typename N, typename E>

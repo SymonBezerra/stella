@@ -1,7 +1,7 @@
 from setuptools import setup, Extension
 
 stella_module = Extension(
-    'stella',
+    '_stella',
     sources=[
         'cpp_src/node.cpp',
         'cpp_src/edge.cpp',
@@ -13,7 +13,6 @@ stella_module = Extension(
         'py_src/adj_matrix.cpp',
     ],
     include_dirs=[
-        '/usr/include/python3.11',
         'py_src',
         'cpp_src'
     ],
@@ -22,7 +21,7 @@ stella_module = Extension(
 )
 
 setup(
-    name='stella',
+    name='_stella',
     version='0.1',
     description='A C++ extension for graph algorithms',
     ext_modules=[stella_module],

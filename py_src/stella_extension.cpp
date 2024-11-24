@@ -10,9 +10,9 @@
 #include "adj_list.hpp"
 #include "adj_matrix.hpp"
 
-static PyModuleDef stellaModule = {
+static PyModuleDef _stellaModule = {
     PyModuleDef_HEAD_INIT,
-    "stella",
+    "_stella",
     "Python extension module for stella",
     -1,
     NULL, NULL, NULL, NULL, NULL
@@ -20,7 +20,7 @@ static PyModuleDef stellaModule = {
 
 
 PyMODINIT_FUNC
-PyInit_stella(void) {
+PyInit__stella(void) {
     PyObject *m;
 
     // Initialize all types
@@ -37,7 +37,7 @@ PyInit_stella(void) {
     }
 
     // Create the stella module
-    m = PyModule_Create(&stellaModule);
+    m = PyModule_Create(&_stellaModule);
     if (m == NULL) {
         return NULL;
     }

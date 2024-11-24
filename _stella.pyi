@@ -121,7 +121,7 @@ class Graph(ABC):
 
     @abstractmethod
     def add_node(self, arg: Union[str, Node]) -> None:
-        """
+        """stella
         Adds a Node object into the Graph. This method has two possible signatures:
 
         `add_node(arg: str)`
@@ -189,6 +189,12 @@ class AdjList(Graph):
     def edges(self) -> dict[Edge]:
         """
         Returns the edges from the AdjList.
+        """
+
+    @property
+    def nodes(self) -> list[Node]:
+        """
+        Returns the nodes from the AdjList.
         """
 
     @property
@@ -260,6 +266,12 @@ class AdjMatrix(Graph):
         * * *
         * *
         *
+        """
+
+    @property
+    def nodes(self) -> list[Node]:
+        """
+        Returns the nodes from the AdjMatrix.
         """
 
 class DirectedAdjMatrix(AdjMatrix):
